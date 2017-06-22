@@ -1,0 +1,321 @@
+<!doctype html>
+<html>
+<head>
+    <title>CodeWin!</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- ========================================================= -->
+    <script src="/js/handlebars-v4.0.10.js"></script>
+    <script src="/js/json2html.js"></script>
+    <script src="/js/jquery.json2html.js"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/css/font-awesome-4.4.0/css/font-awesome.css"></script>
+    <link rel="stylesheet" href="/css/font-awesome-4.4.0/css/font-awesome.css" type="text/css">
+    <link rel="stylesheet" href="/css/design.css" type="text/css">
+    <link rel="stylesheet" href="/css/Windows.css" type="text/css">
+    <style type="text/css" media="screen">
+    #editor {
+        width: 100px;
+    }
+</style>
+    <!-- ========================================================= -->
+</head>
+<body class="noselect" style="background: lightgrey;
+cursor: grab; cursor : -o-grab; cursor : -moz-grab; cursor : -webkit-grab;">
+<!-- ==========================Control panel begin=============================== -->
+  <div class="optionsPanel">
+    <span class="hint" unselectable="on" id="function"><i class="fa fa-cog"></i><div>function</div></span>
+    <span class="hint" unselectable="on" id="type"><i class="fa fa-sitemap"></i><div>Type</div></span>
+    <span class="hint" unselectable="on" id="array"><i class="fa fa-list-ol"></i><div>Array</div></span>
+    <span class="hint" unselectable="on" id="comment"><i class="fa fa-book"></i><div>Comment</div></span>
+    <span class="hint" unselectable="on" id="while"><i class="fa fa-spinner"></i><div>while</div></span>
+    <span class="hint" unselectable="on" id="forEach"><i class="fa fa-circle-o-notch"></i><div>forEach</div></span>
+    <span class="hint" unselectable="on" id="for"><i class="fa fa-refresh"></i><div>for Loop</div></span>
+    <span class="hint" unselectable="on" id="forEach"><i class="fa fa-"></i><div>forEach</div></span>
+    <span class="hint" unselectable="on" id="forloop"><i class="fa fa-"></i><div>for Loop</div></span>
+    <span class="hint" unselectable="on" id="function"><i class="fa fa-"></i><div>function</div></span>
+  </div>
+<!-- ==========================Control panel end=============================== -->
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ==========================Desktop begin=============================== -->
+<!-- div id="All" style="background: lightgrey; width:100vw; height:100vh;" -->
+          <div id="All" style="width:100vw; height:100vh;">
+<!-- ========================================================= -->
+
+
+
+
+
+
+ <a href="#" id="get-data">Get JSON data</a>
+
+      <svg>
+          <path  id="test" d="M0,0
+                   C50,0
+                   50,100
+                   100,100"
+                style="stroke: #006666; fill:none;
+                stroke-width:3px;
+                stroke-linejoin: round;"/>
+      </svg>
+
+
+
+
+<div class="funcbox type global" contenteditable="false" style="z-index: 500; left: 602px; top: 8px;">
+         <div class="head draggable">
+            <div contenteditable="true">Arc :&gt; GeomAbstract
+        </div>
+            <i class="close fa fa-trash fa"></i>
+         </div>
+         <div class="Body" contenteditable="true">
+            <div class="line" contenteditable="true"><div class="line">xc::Int64</div><div class="line">yc::Int64</div><div class="line">radius::Int64</div><div class="line">angle1::Int64</div><div class="line">angle2::Int64</div><div class="line"><br></div></div>
+            <div class="line" contenteditable="true">Arc() = new()</div>
+</div>
+
+
+
+   </div><div class="funcbox array global" contenteditable="false" style="z-index: 400; left: 157px; top: 6px;">
+     <div class="head draggable">
+         <div class="" contenteditable="true">MyArray</div>
+         <i class="close fa fa-trash fa"></i>
+     </div>
+     <div class="arrayBody" contenteditable="true">
+        <div class="line" contenteditable="true">1 2 3 4</div>
+      </div>
+  </div>
+
+  <div class="funcbox function global" style="z-index: 400; left: 95px; top: 502px;">
+        <div class="head draggable" contenteditable="false">
+            <i class="fa fa-cog fa"></i>
+            <span class="Name" contenteditable="true">MakeConcentricArcs</span>
+            <span class="args" contenteditable="true">steps::Array{Float64}, increase::Float64</span>
+            <i class="close fa fa-trash fa"></i>
+        </div>
+    <div class="Body" contenteditable="true">
+      <div>degrees = pi/180.0<br></div>
+
+
+  <div>
+  <div class="funcbox forloop" contenteditable="false">
+        <div class="head">
+            <i class="fa fa-refresh fa"></i>
+            <span class="loopName">for</span>
+            <span class="args" contenteditable="true">j in 1:length(steps)</span>
+            <i class="close fa fa-trash fa"></i>
+        </div>
+        <div id="test" class="loopBody" contenteditable="true"><div><div>MyArc = Arc( &nbsp;128.0, 128.0, steps[j]*increase ,45.0 &nbsp;* (pi/180.0), 180.0 * (pi/180.0) &nbsp;)<br></div></div><div>DrawArc(MyArc)</div></div>
+  </div></div><div>
+  <span class="comment" spellcheck="true" contenteditable="false">
+    <i class="fa fa-book"></i>
+    <span contenteditable="true">
+      <div class="remove" contenteditable="false"><i class="fa fa-times-circle fa"></i></div>
+      Comment
+    </span>
+  </span>
+<br></div></div>
+    </div><div class="funcbox function global" style="z-index: 1000; left: 866px; top: 256px;">
+        <div class="head draggable" contenteditable="false">
+            <i class="fa fa-cog fa"></i>
+            <span class="Name" contenteditable="true">DrawArc</span>
+            <span class="args" contenteditable="true">MyArc::Arc</span>
+            <i class="close fa fa-trash fa"></i>
+        </div>
+    <div  class="Body" style="height:300px;"contenteditable="true">
+        something = true;
+      xc, yc, radius, angle1, angle2 = MyArc<br>
+      set_line_width(cr, 10.0);
+      arc(cr, xc, yc, radius, angle1, angle2);
+      stroke(cr);
+      <span class="comment" spellcheck="true" contenteditable="false">
+    <i class="fa fa-book"></i>
+    <span contenteditable="true">
+      <div class="remove" contenteditable="false"><i class="fa fa-times-circle fa"></i></div>
+      draw helping lines
+    </span>
+  </span>
+
+set_source_rgba(cr, 1, 0.2, 0.2, 0.6);
+set_line_width(cr, 6.0);
+arc(cr, xc, yc, 10.0, 0, 2*pi);
+fill(cr);
+arc(cr, xc, yc, radius, angle1, angle1);
+line_to(cr, xc, yc);
+arc(cr, xc, yc, radius, angle2, angle2);
+line_to(cr, xc, yc);
+stroke(cr);
+move_to(cr,0.0,12.0);
+  <span class="comment" spellcheck="true" contenteditable="false">
+    <i class="fa fa-book"></i>
+    <span contenteditable="true">
+      <div class="remove" contenteditable="false"><i class="fa fa-times-circle fa"></i></div>
+      mark picture with current date
+    </span>
+  </span>
+
+set_source_rgb(cr, 0,0,0);
+show_text(cr,Libc.strftime(time()));
+write_to_png(c,"sample_arc.png");
+
+</div>
+</div>
+
+
+<div class="funcbox function global" style="z-index: 400; left: 132px; top: 129px;">
+        <div class="head draggable" contenteditable="false">
+            <i class="fa fa-cog fa"></i>
+            <span class="name" contenteditable="true">SetupCanvas</span>
+            <span class="args" contenteditable="true"></span>
+            <i class="close fa fa-trash fa"></i>
+        </div>
+    <div class="Body" contenteditable="true">
+# Some numbers \n e123 \n 3.1415926535 \n 0x1234 \n wsh = WebSocketHandler() do req, client \n global connections \n @show connections[client.id] = client&#10;while true # This is a comment! \n msg = read(client)&#10;msg = decodeMessage(msg)&#10;if startswith(msg, "setusername:")&#10;println("SETTING USERNAME: $msg")&#10;usernames[client.id] = msg[13:end]&#10;end&#10;if startswith(msg, "say:")&#10;println("EMITTING MESSAGE: $msg")&#10;for (k,v) in connections&#10;if k != client.id&#10;write(v, (usernames[client.id] * ": " * msg[5:end]))&#10;end&#10;end&#10;end&#10;end&#10;end&#10;&#10;
+    </div>
+
+</div>
+
+
+
+
+<!-- ========================================================= -->
+</div>
+
+<!-- ==========================Desktop end=============================== -->
+
+
+<!-- ==========================origional begin=============================== -->
+        <div id="content">
+            </div>
+            <div id="sayer" style="position:fixed;bottom:0;height:50px;background:#333;width:100%;">
+                <span></span><input name="say" type="text" value="" /><input type="submit" value="say" />
+            </div>
+        </div>
+        <div id="welcome">
+            <h1>Select a username</h1>
+            <form id="pick_username">
+                <input class="username" name="username" type="text" value="" />
+                <input type="submit" value="Enter Chat" />
+            </form>
+        </div>
+<!-- ==========================origional end=============================== -->
+
+
+
+
+
+
+
+<!-- template didnt seem to work on my  browser so I'll use a standardised hack -->
+<!-- ======================================================= -->
+<!-- ======================================================= -->
+<!-- ======================================================= -->
+<!-- ======================================================= -->
+<script id="funct_template"  type="text/x-handlebars-template">
+  <div class="funcbox {{{type}}}" style="z-index: 500; {{{position}}}">
+        <div class="head" contenteditable="false">
+            <i class="fa fa-{{{icon}}} fa"></i>
+            <span class="name" contenteditable="true">{{{name}}}</span>
+            <span class="args" contenteditable="true">{{{args}}}</span>
+            <i class="close fa fa-trash fa"></i>
+        </div>
+    <div class="Body" contenteditable="true"><br>{{{ParsedCode}}}<br></div>
+    </div>
+</script>
+<!-- ======================================================= -->
+<script id="While_template"  type="text/x-handlebars-template">
+  <div class="funcbox {{type}}" contenteditable="false" style="z-index: 500; {{position}}">
+        <div class="head">
+            <i class="fa fa-{{icon}} fa"></i>
+            <span class="name">{{name}}</span>
+            <span class="args" contenteditable="true">{{args}}</span>
+            <i class="close fa fa-trash fa"></i>
+        </div>
+        <div class="Body" contenteditable="true">{{ParsedCode}}</div>
+  </div>
+</script>
+<!-- ======================================================= -->
+<script id="forEach_template"  type="text/x-handlebars-template">
+  <div class="funcbox {{type}}" contenteditable="false" style="z-index: 500; {{position}}">
+        <div class="head">
+            <i class="fa fa-{{icon}} fa"></i>
+            <span class="name">{{name}}</span>
+            <span class="args" contenteditable="true">{{args}}</span>
+            <i class="close fa fa-trash fa"></i>
+        </div>
+        <div class="Body" contenteditable="true">{{ParsedCode}}</div>
+  </div>
+</script>
+<!-- ======================================================= -->
+<script id="forLoop_template"  type="text/x-handlebars-template">
+  <div class="funcbox {{type}}" contenteditable="false" style="z-index: 500; {{position}}">
+        <div class="head">
+            <i class="fa fa-{{icon}} fa"></i>
+            <span class="name">{{name}}</span>
+            <span class="args" contenteditable="true">{{args}}</span>
+            <i class="close fa fa-trash fa"></i>
+        </div>
+        <div class="Body" contenteditable="true">{{ParsedCode}}</div>
+  </div>
+</script>
+<!-- ======================================================= -->
+<script id="type_template"  type="text/x-handlebars-template">
+  <div class="funcbox {{type}}" contenteditable="false" style="z-index: 500; {{position}}">
+         <div class="head">
+            <div>
+            <i class="close fa fa-{{icon}} fa"></i>
+             <span class="name" contenteditable="true">{{name}}</span>
+             <span class="" contenteditable="true">{{args}}</span>
+            </div>
+            <i class="close fa fa-trash fa"></i>
+         </div>
+         <div class="Body" contenteditable="true">{{ParsedCode}}</div>
+   </div>
+</script>
+<!-- ======================================================= -->
+<script id="array_template"  type="text/x-handlebars-template">
+  <div class="funcbox {{type}}" style="z-index: 500; {{position}}">
+     <div class="head">
+         <div contenteditable="true">
+             <i class="close fa fa-{{icon}} fa"></i>
+             <span class="name" contenteditable="true">{{name}}</span>
+         </div>
+         <i class="close fa fa-trash fa"></i>
+     </div>
+     <div class="Body" contenteditable="true">{{ParsedCode}}</div>
+  </div>
+</script>
+<!-- ======================================================= -->
+<!-- ======================================================= -->
+<script id="comment_template"  type="text/x-handlebars-template">
+  <span class="comment" spellcheck="true" contenteditable="false" style="z-index: 500; {{position}}">
+    <i class="fa fa-{{icon}}"></i>
+    <span contenteditable="true">
+      <div class="remove" contenteditable="false">
+        <i class="fa fa-times-circle fa"></i>
+      </div>
+      {{ParsedCode}}
+    </span>
+  </span>
+</script>
+<!-- ======================================================= -->
+<template id="_template" type="text/x-handlebars-template"></template>
+
+<!-- ========================================================= -->
+
+<script src="/js/WebSockets.js"   type="text/javascript" ></script>
+<script src="/js/parse.js"        type="text/javascript" ></script>
+<script src="/js/dragable.js"     type="text/javascript" ></script>
+<script src="/js/GenerateView.js" type="text/javascript" ></script>
+<!-- ========================================================= -->
+</body>
+</html>
