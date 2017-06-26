@@ -20,11 +20,14 @@
         display: block;
         border-radius: 0px 0px 7px 7px;
     }
-    .head{ padding:5px; border-radius: 7px 7px 0px 0px; }
+    .head{ padding:5px; border-radius: 7px 7px 0px 0px;
+      -webkit-user-modify: read-write;
+      -moz-user-modify: read-write;
+      user-modify: read-write; }
 
 
  .try, .catch{        background: #333; color: black; border: thin solid #993d00;}
- .try .head, .catch .head{ background: #333; color: white; border-bottom: : thin solid #993d00;}
+ .try .head, .catch .head{ padding: 0px; background: #444; color: white; border-bottom: thin solid #4d4dff;}
  .if, .elseif, .else{ background: #333; color: black; border: thin solid #3366ff;}
  .if .head, .elseif .head, .else .head{ background: #333; color: black; border: thin solid #3366ff;}
  .do{                 background: #001a33; color: white; border: thin solid #001a33;}
@@ -33,7 +36,8 @@
  .function{           background:  orange; color: black; border: thin solid orange; }
 
    .tabBox{ border-radius: 7px; margin:5px; background:  #4d4dff; padding:1px;}
-   .tablink{ line-height: 1.4; color: black; background-color: #b3b3ff; border-radius: 7px; padding:3px; margin:3px;}
+   .tablink{ cursor: pointer;
+     line-height: 1.4; color: black; background-color: #b3b3ff; border-radius: 7px; padding:3px; margin:3px;}
    .tablink:hover{ background-color: #e6e6ff; border-radius: 7px;}
    .Body{
         color:white;
@@ -53,9 +57,93 @@
 <script type="text/javascript">
 scopes = /\b(module|function|while|do|type|struct|for|if|else|elseif|try|catch|finally|end)\b/g; // omit 'g' to make match act like exec but in array form
 
-var content = ' \n function decodeMessage( msg ) \n String(copy(msg)) \n end \nfunction eval_or_describe_error(strmsg) \n try \n return eval(parse(strmsg, raise = false)) \n catch err \n iob = IOBuffer() \n        dump(iob, err) \n        return String(take!(iob)) \n   end \nend \n \nwsh = WebSocketHandler() do req, client \n    global connections \n    connections[client.id] = client \n    while true \n        val = client |> read |> decodeMessage |> eval_or_describe_error \n        output = String(take!(Base.mystreamvar)) \n        val = val == nothing ? "<br>" : val \n        write(client,"$val<br>$output") \n    end \nend \n';
+var content = 'using HttpServer\nusing WebSockets\n\n#global Dict to store open connections in\nglobal connections = Dict{Int,WebSocket}()\nglobal usernames   = Dict{Int,String}()\n\nfunction decodeMessage( msg )\n    String(copy(msg))\nend\nfunction eval_or_describe_error(strmsg)\n   try\n       return eval(parse(strmsg, raise = false))\n   catch err\n        iob = IOBuffer()\n        dump(iob, err)\n        return String(take!(iob))\n   end\nend\n\nwsh = WebSocketHandler() do req, client\n    global connections\n    connections[client.id] = client\n    while true\n        val = client |> read |> decodeMessage |> eval_or_describe_error\n    while something end    output = String(take!(Base.mystreamvar))\n        val = val == nothing ? "<br>" : val\n        write(client,"$val<br>$output")\n    end\nend\n\nonepage = readstring(Pkg.dir("CodeServer","src","repl.html"))\nhttph = HttpHandler() do req::Request, res::Response\n  Response(onepage)\nend\n\nserver = Server(httph, wsh)\nprintln("Repl server listening on 8080...")\n\neval(Base,parse("mystreamvar = IOBuffer()"))\neval(Base,parse("STDOUT = mystreamvar"))\n\nrun(server,8080)\n\n';
+
 ////////////////////////////////////////////////////////////////////////////////
 parse();
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+function parse(){
+      var node = document.getElementById("code")
+      var parent = node.parentNode
+
+      str = content
+node.innerHTML = str;
+
+      m = [{ type: "root", start: 0, id: 0, length: 0 }];
+      var match = "";
+
+var index = 1;
+var last = 0;
+     while((match = scopes.exec(str)) != null){
+            if(match != null){
+            var code = str.slice(last, match.index );
+            last = (match.index + match[1].length);
+                if(code.length){
+                      m.push( { id: index++,
+                                type: "code",
+                                code: code  //, start: match.index, end: last
+                              } );
+                }
+                      var  args = "";
+
+                m.push( { id: index++,
+                          type: match[1],
+                          args: args //, start: match.index, end: last
+                        } );
+
+            }
+      }
+      // flush out last bit of code...
+
+
+        m.push( { id: index, type: "code",
+        code: str.slice( last, str.length ) } );
+        // alert(JSON.stringify(m[m.length])) // str.slice( m[m.length-1].end, str.length )
+
+
+// module function while do type struct for ...end
+// if elseif else ...end
+// try catch finally ...end
+ //tree = [];
+ stack = [{type:m[0].type, id:0, parent:0}]; // , address: ""
+//...................................
+for (var i = 1; i < m.length; i++) {
+        var word = m[i].type;
+        var last = stack[stack.length-1].type;
+        var thisOne = stack[stack.length-1];
+
+      m[i].parent = thisOne.id; // Sets as sibling
+
+      if(word == "end"){ stack.pop();  //  linkAndPop(stack, m, i);
+      }else if(word == "code"){ m[i].parent = thisOne.id; // thisOne.parent;
+      }else{
+
+                if(stack.length > 0){
+                      if((last == "if" || last == "elseif") && (word == "elseif" || word == "else")){
+                            stack.pop(); }
+
+                      if((last == "try"  || last == "catch") && (word == "catch" || word == "finally")){
+                            stack.pop(); }
+                }
+                stack.push({type: word, id: m[i].id, parent: (stack[stack.length-1] == undefined)? 0:stack[stack.length-1].id });
+
+      }
+}
+//...................................
+
+    n = nest(m, 0);
+alert(JSON.stringify(n))
+console.log(JSON.stringify(n));
+ht = buildComponents(n,0);
+node.innerHTML = ht;
+
+ buildComponents(n)
+//Disect(n);
+}
 ////////////////////////////////////////////////////////////////////////////////
 function nest(arr, parent) {
     var out = []
@@ -69,164 +157,75 @@ function nest(arr, parent) {
     return out
 }
 ////////////////////////////////////////////////////////////////////////////////
-function parse(){
-      var node = document.getElementById("code")
-      var parent = node.parentNode
-
-      str = content
-node.innerHTML = str;
-
-      m = [{ type: "root", start: 0, id: 0, length: 0 }];
-      var match = "";
-
-var index = 1
-     while((match = scopes.exec(str)) != null){
-            //match = scopes.exec(str); //  alert(match)
-            if(match != null){
-                m.push( { type: match[1], start: match.index, id: index, length: match[1].length } );
-                index++;
-            }
-      }
-
-// module function while do type struct for ...end
-// if elseif else ...end
-// try catch finally ...end
- tree = []
- stack = [{type:m[0].type, id:0, parent:0, address: "" }];
-//...................................
-for (var i = 1; i < m.length; i++) {
-        word = m[i].type
-
-        if(stack.length > 0){
-          address = stack[stack.length-1].address;
-        }else{ address = ""; }
-
-
-      if(word != "end"){
-            if(stack.length > 0){
-                  if((stack[stack.length-1].type == "if" || stack[stack.length-1].type == "elseif")
-                    && (word == "elseif" || word == "else")){
-                        linkAndPop(stack, m, i);
-                  }
-
-                  if((stack[stack.length-1].type == "try"  || stack[stack.length-1].type == "catch")
-                    && (word == "catch" || word == "finally")){
-                        linkAndPop(stack, m, i);
-                  }
-            }
-
-          stack.push({type:word, id:i,
-            parent: (stack[stack.length-1] == undefined)? 0:stack[stack.length-1].id });
-      }else{ linkAndPop(stack, m, i); }
-}
-//...................................
-
-    n = nest(m, 0);
-   //alert(  JSON.stringify(n)  )
-
-
-      var l = m[0].link;
-node.innerHTML = '<div class="function">   <div class="head">' +
-                  str.slice(n[0].start, n[0].start + n[0].length) + '</div>   <div class="Body">' +
-                  str.slice(n[0].start + n[0].length, n[1].start ) + '<div class="end">' +
-                  str.slice(n[1].start, n[1].length) + '</div></div>   </div>';
-
-ht = buildComponents(n,0);
-node.innerHTML = ht;
+function GenerateId(){ return "id" + Math.random().toString(16).slice(2); }
+////////////////////////////////////////////////////////////////////////////////
 function buildComponents(n){
-  s = "";
-  buf = "";
-  tabs = [];
+  var s = "", code = "", buf = "";
+  var tabs = [];
     for (var i = 0; i < n.length; i++) {
+      //if(n[i].code){ s += n[i].code; }
+
+      // get Children
+      var children = "";
+      if(n[i].children != undefined) { children = buildComponents(n[i].children); }
+
+
       switch (n[i].type) {
-        // Component begin
-        case "module": s = s +'<div class="module"><div class="head">' +
-                str.slice(n[i].start, n[i].start + n[i].length) + '</div><div class="Body">'; break;
-        case "function": s = s +'<div class="function"><div class="head">' +
-                str.slice(n[i].start, n[i].start + n[i].length) + '</div><div class="Body">'; break;
-        case "while": s = s +'<div class="while"><div class="head">' +
-                str.slice(n[i].start, n[i].start + n[i].length) + '</div><div class="Body">'; break;
-        case "do": s = s +'<div class="do"><div class="head">' +
-                str.slice(n[i].start, n[i].start + n[i].length) + '</div><div class="Body">'; break;
-        case "for": s = s +'<div class="for"><div class="head">' +
-                str.slice(n[i].start, n[i].start + n[i].length) + '</div><div class="Body">'; break;
+
+        // Component begin ""
+        case "module": s += '<div class="module global"><div class="head">module</div><div class="Body">' + children; break;
+        case "function": s += '<div class="function global"><div class="head">function</div><div class="Body">' + children; break;
+        case "while": s += '<div class="while"><div class="head">while</div><div class="Body">' + children; break;
+        case "do": s += '<div class="do"><div class="head">do</div><div class="Body">' + children; break;
+        case "for": s += '<div class="for"><div class="head">for</div><div class="Body">' + children; break;
 
         // Tablike starters
         case "try": var id = GenerateId(); tabs.push(  {tab:"try", id:id}  );
-                buf += '<div id="' + id + '" class="try" style="display:block;"><div class="head">' +
-                str.slice(n[i].start, n[i].start + n[i].length) + '</div><div class="Body">';
+                buf += '<div id="' + id + '" class="try" style="display:block;"><div class="head">try</div><div class="Body">' + children;
                 break;
         case "if": var id = GenerateId(); tabs.push(  {tab:"if", id:id}  );
-                 buf += '<div id="' + id + '" class="if" style="display:block;"><div class="head">' +
-                str.slice(n[i].start, n[i].start + n[i].length) + '</div><div class="Body">';
+                 buf += '<div id="' + id + '" class="if" style="display:block;"><div class="head">if</div><div class="Body">' + children;
                 break;
         // Tablike inner blocks
         case "catch": var id = GenerateId(); tabs.push(  {tab:"catch", id:id}  );
-                 buf += '</div></div><div id="' + id + '" class="catch" style="display:none;"><div class="head">' +
-                str.slice(n[i].start, n[i].start + n[i].length) + '</div><div class="Body">';
-                break;
+                 buf += code + '</div></div><div id="' + id + '" class="catch" style="display:none;"><div class="head">catch</div><div class="Body">' + children;
+                 code = ""; break;
         case "elseif": var id = GenerateId(); tabs.push(  {tab:"elseif", id:id}  );
-                 buf += '</div></div><div id="' + id + '" class="elseif" style="display:none;"><div class="head">' +
-                str.slice(n[i].start, n[i].start + n[i].length) + '</div><div class="Body">';
-                break;
+                 buf += code + '</div></div><div id="' + id + '" class="elseif" style="display:none;"><div class="head">elseif</div><div class="Body">' + children;
+                 code = ""; break;
         case "else": var id = GenerateId(); tabs.push(  {tab:"else", id:id}  );
-                 buf += '</div></div><div id="' + id + '" class="else" style="display:none;"><div class="head">' +
-                str.slice(n[i].start, n[i].start + n[i].length) + '</div><div class="Body">';
-                break; //default:
+                 buf += code + '</div></div><div id="' + id + '" class="else" style="display:none;"><div class="head">else</div><div class="Body">' + children;
+                 code = ""; break; //default:
+
+        case "code": code = n[i].code; break;
+
+        case "end":
+                    if( tabs.length > 0){// end of tabbed block
+                        s += '<div  class="tabBox">'
+                        for (var t in tabs) {
+                            s += '<span class="tablink" onclick="openCity(' + tabs[t].id + ', this)" id="'
+                            + tabs[t].id + '">' + tabs[t].tab + '</span>';
+                        }
+                        s += buf + code + '<div class="end">end</div> </div></div>   </div>'; // WAS: str.slice(n[i].start, n[i].length)
+                    }
+                    else{ // end of normal block
+                        s += code + '<div class="end">end</div> </div></div>'; //  buf +
+                    }
+                    tabs = [];
+                    buf = ""; code = "";
+         break;
       }
 
 
 
-        // Children insert
-        if(n[i].children != undefined) { s = s + buildComponents(n[i].children) }
-
-        // Close component
-        if(n[i].type == "end"){                                       // </this></body></funct>
-
-              if(tabs.length){// end of tabbed block
-                  s += '<div  class="tabBox">'
-                  for (var t in tabs) {
-                      s += '<span class="tablink" onclick="openCity(' + tabs[t].id + ', this)" id="'
-                      + tabs[t].id + '">' + tabs[t].tab + '</span>'
-                  }
-                  s += buf;
-                  s += '<div class="end">' + str.slice(n[i].start, n[i].length) + '</div></div></div>   </div>';
-                  tabs = [];  buf = ""; }
-              else{ // end of normal block
-                  s += buf + '<div class="end">' + str.slice(n[i].start, n[i].length) + '</div></div></div>';
-                  buf = "";
-              }
-
-        }else{ // Code (raw)
-                if(n[i].start + n[i].length < n[i+1].start){
-                  buf += str.slice(n[i].start + n[i].length, n[i+1].start );
-                }
-        }
 
 
+        // Close component if(n[i].type == "end"){}
      } // end of for loop
      return s;
 }
 
-       for (var i = 0; i < m.length; i++) { console.log(i + " " + m[i].id + " " + m[i].type) }
-}
 ////////////////////////////////////////////////////////////////////////////////
-function GenerateId(){return "id" + Math.random().toString(16).slice(2);}
-////////////////////////////////////////////////////////////////////////////////
-function linkAndPop(stack, m, i){
-          s = stack.pop();
-          if(s == undefined){alert("Warning: structural error in code!")}
-            index = s.id;
-            //m[index].link = i; // link to end-object
-            m[index].parent = s.parent; // link to end
-
-            //m[i].link = index; // link to opening ...just because we can! :)
-            m[i].parent = s.parent; // link to opening ...just because we can! :)
-
-}
-////////////////////////////////////////////////////////////////////////////////
-
-
 
 </script>
 <!-- ========================================================= -->
