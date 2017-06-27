@@ -3,11 +3,14 @@
 <head>
     <title>CodeWin!</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <!-- ========================================================= -->
-<style type="text/css" media="screen">
 
+    <!-- ========================================================= -->
+    <style type="text/css" media="screen">
+.global{
+	  position:absolute;
+}
  /* function try if do for while catch elseif else */
-    .function, .do, .for, .while{
+    .function, .do, .for, .while, .JuliaFile{
       min-width: 300px;
         max-width: 600px;
         margin:5px;
@@ -26,16 +29,21 @@
       user-modify: read-write; }
 
 
- .try, .catch{        background: #333; color: black; border: thin solid #993d00;}
- .try .head, .catch .head{ padding: 0px; background: #444; color: white; border-bottom: thin solid #4d4dff;}
- .if, .elseif, .else{ background: #333; color: black; border: thin solid #3366ff;}
- .if .head, .elseif .head, .else .head{ background: #333; color: black; border: thin solid #3366ff;}
+ .try, .catch{        background: #333; color: black;}
+ .try .head, .catch .head{ padding: 0px 5px 0px 5px; background: #555; color: white;
+   border-bottom: thin solid #4d4dff; border-radius: 0px;}
+ .if, .elseif, .else{ background: #333; color: black;}
+ .if .head, .elseif .head, .else .head{  padding: 0px 5px 0px 5px;  background: #555; color: white;
+   border-bottom: thin solid #4080bf; border-radius: 0px;}
  .do{                 background: #001a33; color: white; border: thin solid #001a33;}
  .for{                background: #006666; color: black; border: thin solid #006666;}
  .while{              background: #558000; color: black; border: thin solid #558000;}
  .function{           background:  orange; color: black; border: thin solid orange; }
+ .JuliaFile{           background:  #004d4d; color: white; border: medium solid #004d4d; }
 
-   .tabBox{ border-radius: 7px; margin:5px; background:  #4d4dff; padding:1px;}
+
+   .tabBox.try{ border-radius: 7px; margin:5px; background:  #4d4dff; padding:1px;}
+   .tabBox.if { border-radius: 7px; margin:5px; background:  #4080bf; padding:1px;}
    .tablink{ cursor: pointer;
      line-height: 1.4; color: black; background-color: #b3b3ff; border-radius: 7px; padding:3px; margin:3px;}
    .tablink:hover{ background-color: #e6e6ff; border-radius: 7px;}
@@ -45,185 +53,30 @@
         padding:5px;
         border-radius: 0px 0px 7px 7px;
   }
-  .end{
-    display: none;
+  .JuliaFile > .Body{ color: white; background: #666; }
+  .end{ display: none; }
+  .head .name{font-weight: 600;}
+  .head .args{
+  	cursor: text;
+  	background: #262a33;
+  	color: #d1e44c;
+  	min-width: 15px;
+  	height: 20px;
+  	padding-left: 6px;
+  	padding-right: 6px;
+  	padding-bottom:2px;
+  	font-weight: 300;
+  	border-radius: 3px;
   }
-
 
 </style>
 <!-- ========================================================= -->
+<input type="file" id="file-input" />
+<h3>Contents of the file:</h3>
+<pre id="file-content"></pre>
 <div id="code">Hello!</div>
 <!-- ========================================================= -->
 <script type="text/javascript">
-scopes = /\b(module|function|while|do|type|struct|for|if|else|elseif|try|catch|finally|end)\b/g; // omit 'g' to make match act like exec but in array form
-
-var content = 'using HttpServer\nusing WebSockets\n\n#global Dict to store open connections in\nglobal connections = Dict{Int,WebSocket}()\nglobal usernames   = Dict{Int,String}()\n\nfunction decodeMessage( msg )\n    String(copy(msg))\nend\nfunction eval_or_describe_error(strmsg)\n   try\n       return eval(parse(strmsg, raise = false))\n   catch err\n        iob = IOBuffer()\n        dump(iob, err)\n        return String(take!(iob))\n   end\nend\n\nwsh = WebSocketHandler() do req, client\n    global connections\n    connections[client.id] = client\n    while true\n        val = client |> read |> decodeMessage |> eval_or_describe_error\n    while something end    output = String(take!(Base.mystreamvar))\n        val = val == nothing ? "<br>" : val\n        write(client,"$val<br>$output")\n    end\nend\n\nonepage = readstring(Pkg.dir("CodeServer","src","repl.html"))\nhttph = HttpHandler() do req::Request, res::Response\n  Response(onepage)\nend\n\nserver = Server(httph, wsh)\nprintln("Repl server listening on 8080...")\n\neval(Base,parse("mystreamvar = IOBuffer()"))\neval(Base,parse("STDOUT = mystreamvar"))\n\nrun(server,8080)\n\n';
-
-////////////////////////////////////////////////////////////////////////////////
-parse();
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-function parse(){
-      var node = document.getElementById("code")
-      var parent = node.parentNode
-
-      str = content
-node.innerHTML = str;
-
-      m = [{ type: "root", start: 0, id: 0, length: 0 }];
-      var match = "";
-
-var index = 1;
-var last = 0;
-     while((match = scopes.exec(str)) != null){
-            if(match != null){
-            var code = str.slice(last, match.index );
-            last = (match.index + match[1].length);
-                if(code.length){
-                      m.push( { id: index++,
-                                type: "code",
-                                code: code  //, start: match.index, end: last
-                              } );
-                }
-                      var  args = "";
-
-                m.push( { id: index++,
-                          type: match[1],
-                          args: args //, start: match.index, end: last
-                        } );
-
-            }
-      }
-      // flush out last bit of code...
-
-
-        m.push( { id: index, type: "code",
-        code: str.slice( last, str.length ) } );
-        // alert(JSON.stringify(m[m.length])) // str.slice( m[m.length-1].end, str.length )
-
-
-// module function while do type struct for ...end
-// if elseif else ...end
-// try catch finally ...end
- //tree = [];
- stack = [{type:m[0].type, id:0, parent:0}]; // , address: ""
-//...................................
-for (var i = 1; i < m.length; i++) {
-        var word = m[i].type;
-        var last = stack[stack.length-1].type;
-        var thisOne = stack[stack.length-1];
-
-      m[i].parent = thisOne.id; // Sets as sibling
-
-      if(word == "end"){ stack.pop();  //  linkAndPop(stack, m, i);
-      }else if(word == "code"){ m[i].parent = thisOne.id; // thisOne.parent;
-      }else{
-
-                if(stack.length > 0){
-                      if((last == "if" || last == "elseif") && (word == "elseif" || word == "else")){
-                            stack.pop(); }
-
-                      if((last == "try"  || last == "catch") && (word == "catch" || word == "finally")){
-                            stack.pop(); }
-                }
-                stack.push({type: word, id: m[i].id, parent: (stack[stack.length-1] == undefined)? 0:stack[stack.length-1].id });
-
-      }
-}
-//...................................
-
-    n = nest(m, 0);
-alert(JSON.stringify(n))
-console.log(JSON.stringify(n));
-ht = buildComponents(n,0);
-node.innerHTML = ht;
-
- buildComponents(n)
-//Disect(n);
-}
-////////////////////////////////////////////////////////////////////////////////
-function nest(arr, parent) {
-    var out = []
-    for(var i in arr) {
-        if(arr[i].parent == parent) {
-            var children = nest(arr, arr[i].id)
-            if(children.length) { arr[i].children = children }
-            out.push(arr[i])
-        }
-    }
-    return out
-}
-////////////////////////////////////////////////////////////////////////////////
-function GenerateId(){ return "id" + Math.random().toString(16).slice(2); }
-////////////////////////////////////////////////////////////////////////////////
-function buildComponents(n){
-  var s = "", code = "", buf = "";
-  var tabs = [];
-    for (var i = 0; i < n.length; i++) {
-      //if(n[i].code){ s += n[i].code; }
-
-      // get Children
-      var children = "";
-      if(n[i].children != undefined) { children = buildComponents(n[i].children); }
-
-
-      switch (n[i].type) {
-
-        // Component begin ""
-        case "module": s += '<div class="module global"><div class="head">module</div><div class="Body">' + children; break;
-        case "function": s += '<div class="function global"><div class="head">function</div><div class="Body">' + children; break;
-        case "while": s += '<div class="while"><div class="head">while</div><div class="Body">' + children; break;
-        case "do": s += '<div class="do"><div class="head">do</div><div class="Body">' + children; break;
-        case "for": s += '<div class="for"><div class="head">for</div><div class="Body">' + children; break;
-
-        // Tablike starters
-        case "try": var id = GenerateId(); tabs.push(  {tab:"try", id:id}  );
-                buf += '<div id="' + id + '" class="try" style="display:block;"><div class="head">try</div><div class="Body">' + children;
-                break;
-        case "if": var id = GenerateId(); tabs.push(  {tab:"if", id:id}  );
-                 buf += '<div id="' + id + '" class="if" style="display:block;"><div class="head">if</div><div class="Body">' + children;
-                break;
-        // Tablike inner blocks
-        case "catch": var id = GenerateId(); tabs.push(  {tab:"catch", id:id}  );
-                 buf += code + '</div></div><div id="' + id + '" class="catch" style="display:none;"><div class="head">catch</div><div class="Body">' + children;
-                 code = ""; break;
-        case "elseif": var id = GenerateId(); tabs.push(  {tab:"elseif", id:id}  );
-                 buf += code + '</div></div><div id="' + id + '" class="elseif" style="display:none;"><div class="head">elseif</div><div class="Body">' + children;
-                 code = ""; break;
-        case "else": var id = GenerateId(); tabs.push(  {tab:"else", id:id}  );
-                 buf += code + '</div></div><div id="' + id + '" class="else" style="display:none;"><div class="head">else</div><div class="Body">' + children;
-                 code = ""; break; //default:
-
-        case "code": code = n[i].code; break;
-
-        case "end":
-                    if( tabs.length > 0){// end of tabbed block
-                        s += '<div  class="tabBox">'
-                        for (var t in tabs) {
-                            s += '<span class="tablink" onclick="openCity(' + tabs[t].id + ', this)" id="'
-                            + tabs[t].id + '">' + tabs[t].tab + '</span>';
-                        }
-                        s += buf + code + '<div class="end">end</div> </div></div>   </div>'; // WAS: str.slice(n[i].start, n[i].length)
-                    }
-                    else{ // end of normal block
-                        s += code + '<div class="end">end</div> </div></div>'; //  buf +
-                    }
-                    tabs = [];
-                    buf = ""; code = "";
-         break;
-      }
-
-
-
-
-
-        // Close component if(n[i].type == "end"){}
-     } // end of for loop
-     return s;
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -232,6 +85,9 @@ function buildComponents(n){
 <!-- ========================================================= -->
 </head>
 <body>
-
+  <script src="js/parse.js"        type="text/javascript" ></script>
+  <script src="js/dragable.js"     type="text/javascript" ></script>
+  <script src="js/JuliaParser.js"     type="text/javascript" ></script>
+  <script src="js/FileReader.js"     type="text/javascript" ></script>
 
 </body></html>
