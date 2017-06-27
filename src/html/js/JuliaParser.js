@@ -57,19 +57,14 @@ var eat = 0;
               }else{ eat = 0; }
 
             var code = str.slice(last + eat, match.index );
-            last = (match.index + match[1].length + eat);
+
+            last = (match.index + match[1].length);
                 if(code.length){
-                      m.push( { id: index++,
-                                type: "code",
-                                code: code  //, start: match.index, end: last
-                              } );
+                      m.push( { id: index++, type: "code", code: code } );
                 }
 
              data = getComplement(match[1], str.slice(match.index, str.length ));
-                m.push( { id: index++,
-                          type: match[1],
-                          args: data //, start: match.index, end: last
-                        } );
+                m.push( { id: index++, type: match[1], args: data  } );
 
             }
       }
@@ -140,14 +135,23 @@ function buildComponents(n){
 
       switch (n[i].type) {
 
-        // Component begin ""
-        case "JuliaFile": s += '<div class="JuliaFile global" style="z-index: 400; left: 95px; top: 502px;"><div class="head  draggable">' + n[i].args[0] + '</div><div class="Body">' + children; break;
-        case "module": s += '<div class="module global" style="z-index: 400; left: 95px; top: 502px;"><div class="head  draggable">module ' + n[i].args[0] + '</div><div class="Body">' + children; break;
-        case "function": s += '<div class="function global" style="z-index: 400; left: 95px; top: 502px;"><div class="head  draggable"><span class="name">'
+        // Component begin "" folder-o
+        case "JuliaFile": s += '<div class="JuliaFile global" style="z-index: 400; left: 95px; top: 502px;"><div class="head draggable"><i class="fa fa-folder-o fa"></i>' + n[i].args[0] + '</div><div class="Body">' + children; break;
+        case "module": s += '<div class="module " style="z-index: 400; left: 95px; top: 502px;"><div class="head draggable">module ' + n[i].args[0] + '</div><div class="Body">' + children; break;
+        case "function": s += '<div class="function global" style="z-index: 400; left: 95px; top: 502px;"><div class="head draggable"><i class="fa fa-gears fa"></i><span class="name">'
         + n[i].args[0] + ' </span> <span class="args">'
         + n[i].args[1] + '</span></div><div class="Body">' + children; break;
-        case "while": s += '<div class="while"><div class="head">while ' + n[i].args[0] + '</div><div class="Body">' + children; break;
-        case "do": s += '<div class="do"><div class="head"> ' + n[i].args[0] + 'do</div><div class="Body">' + children; break;
+
+        case "type": s += '<div class="type global" style="z-index: 400; left: 95px; top: 502px;"><div class="head draggable"><i class="fa fa-object-ungroup fa"></i><span class="name">'
+        + n[i].args[0] + ' </span> <span class="args">'
+        + n[i].args[1] + '</span></div><div class="Body">' + children; break;
+        case "struct": s += '<div class="struct global" style="z-index: 400; left: 95px; top: 502px;"><div class="head draggable"><i class="fa fa-object-group fa"></i><span class="name">'
+        + n[i].args[0] + ' </span> <span class="args">'
+        + n[i].args[1] + '</span></div><div class="Body">' + children; break;
+
+
+        case "while": s += '<div class="while"><div class="head"><i class="fa fa-history fa"></i>while ' + n[i].args[0] + '</div><div class="Body">' + children; break;
+        case "do": s += '<div class="do"><div class="head"><i class="fa fa-gear fa"></i> ' + n[i].args[0] + 'do</div><div class="Body">' + children; break;
         case "for": s += '<div class="for"><div class="head">for ' + n[i].args[0] + '</div><div class="Body">' + children; break;
 
         // Tablike starters
@@ -168,7 +172,7 @@ function buildComponents(n){
                  buf += code + '</div></div><div id="' + id + '" class="else" style="display:none;"><div class="head">else</div><div class="Body">' + children;
                  code = ""; break; //default:
 
-        case "code": s += n[i].code; break;
+        case "code": s += parseCode(n[i].code); break;
 
         case "end":
                     if( tabs.length > 0){// end of tabbed block
