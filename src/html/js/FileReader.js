@@ -7,7 +7,7 @@ function readSingleFile(e) {
     var contents = e.target.result;
 
     displayContents(contents);
-
+    dumpTokens(contents);
   };
   reader.readAsText(file);
 }
@@ -25,6 +25,7 @@ function displayContents(contents) {
 }
 ////////////////////////////////////////////////////////////////////////////////
 function MakeFileBall(ProjectFiles){
+
   var str = "";
   for (var i=0; i < ProjectFiles.length; i++) {
       str += 'JuliaFile ' + ProjectFiles[i].file + ' \n' + ProjectFiles[i].contents + 'end \n ';
