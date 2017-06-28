@@ -15,7 +15,7 @@ window.onload=function(){
       var array   = document.getElementById('array_template');
 
 
-   desktop = document.getElementById('All');
+   desktop = document.getElementById('code');
 	var el = desktop;
 		el.onclick = function(e) {
              x = event.clientX;
