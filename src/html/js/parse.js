@@ -32,7 +32,7 @@ window.onload=function(){
       		    	range = sel.getRangeAt(0);
 		};
     // funct, comment, type;
-	 el = document.getElementById('for');
+/*	 el = document.getElementById('for');
 		el.onclick = function() { pasteHtmlAtCaret(forLoop.cloneNode(true)); };
 	 el = document.getElementById('forEach');
 		el.onclick = function() { pasteHtmlAtCaret(forEach.cloneNode(true)); };
@@ -47,7 +47,7 @@ window.onload=function(){
 	el = document.getElementById('type');
 		el.onclick = function() { pasteHtmlAtCaret(type.cloneNode(true)); };
 	el = document.getElementById('array');
-		el.onclick = function() { pasteHtmlAtCaret(array.cloneNode(true)); };
+		el.onclick = function() { pasteHtmlAtCaret(array.cloneNode(true)); };*/
 ///////////// delete module. ()
 var elem = document.getElementsByClassName('remove');
 		for (var i = 0; i < elem.length; i++) {

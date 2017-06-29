@@ -27,9 +27,9 @@ function getComplement(type, str){
 if(match!==null && match.length>0){
   if(match.length ==4){  return [match[2],match[3],match[1]];
    }
-  if(match.length ==3){ alert(match); return [match[2],match[3],match[1]];
+  if(match.length ==3){  return [match[2],match[3],match[1]];
    }
-  else if(match.length ==2){ return [match[2],"",match[1]]; alert(match[1]);}
+  else if(match.length ==2){ return [match[2],"",match[1]]; }
   else if(match.length ==1){ return [match[1],"",match[1]]; }
 }
 return ["","",""];
@@ -97,10 +97,10 @@ for (var i = 1; i < m.length; i++) {
 //...................................
 
     n = nest(m, 0);
- alert(JSON.stringify(n))
+ //alert(JSON.stringify(n))
 // console.log(JSON.stringify(n));
 ht = buildComponents(n);
-alert(ht)
+//alert(ht)
 node.innerHTML = ht;
 
  //buildComponents(n);

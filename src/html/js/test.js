@@ -50,48 +50,196 @@ rules = [
 
   {action: "none", name:"word",            expr:/^(\w+)/,                                groups:1},
 
-  {action: "none", name:"spaceNewline",    expr:/^([\n\r\t\r\s])/,                       groups:1}
+  {action: "none", name:"spaceNewline",    expr:/^([\n\r\t\r\s]+)/,                       groups:1}
   // {name:"newline",         expr:/^(\n|\r)/,                              groups:1},
   // {name:"space",           expr:/^(\s+)/,                                groups:1}
     // mutable struct, let ... end,
     ];
-    tree = {type:"root", children:[] };
-    stack = [{type:"root", node:tree}];
+    tree = [{type:"root", children:[]}] ;
+    stack = [];
 
 
 ////////////////////////////////////////////////////////////////////////////////
 function dumpTokens(str){
-  tree = {type:"root", children:[] };
-  stack = [{type:"root", node:tree}];
+  tree = [{type:"root", children:[] }];
+  stack.push({type:"root", node:tree[0]});
     newstring = getNextToken(str);
 
     printOut(newstring);
     while (newstring !== null) {
-      newstring = getNextToken(newstring.match[newstring.match.length-1]);
-      var token = printOut(newstring);
-      console.log( token.type + ": " + newstring.action );
-      var node = stack[stack.length-1].node;
-      //     "none" "push" "pop" "pupo"
-      switch (newstring.action) {
-            case "none": node.children.push(token); break;
+            newstring = getNextToken(newstring.match[newstring.match.length-1]);
+            var token = printOut(newstring);
+            if(token === undefined){break;}
+            //console.log( token.type + ": " + newstring.action );
+            if(stack[stack.length-1] !== undefined ){
+              var node = stack[stack.length-1].node;}
+            //     "none" "push" "pop" "pupo"
+            switch (newstring.action) {
+                  case "none": node.children.push(token); break;
 
-            case "push": node.children.push(token);
-                         var newNode = node.children[node.children.length-1];
-                         stack.push({type: token.name, node:newNode });  break;
+                  case "push": node.children.push(token);
+                               var newNode = node.children[node.children.length-1];
+                               stack.push({type: token.name, node:newNode });  break;
 
-            case "pop":  stack.pop(); node.children.push(token); break;
+                  case "pop":  stack.pop(); // pop structure opening.
+                               node = stack[stack.length-1].node;  // get new parent.
+                               node.children.push(token); // push 'end' to new parent.
+                               break;
 
-            case "pupo": stack.pop();
-                         node = stack[stack.length-1].node;
-                         node.children.push(token);
-                         break;
+                  case "pupo": stack.pop(); // pop structure opening.
+                               node = stack[stack.length-1].node;
+                               node.children.push(token); // get new parent.
+                               var newNode = node.children[node.children.length-1];
+                               stack.push({type: token.name, node:newNode });
+                               break;
+            }
+    } // while
+    tree.push({type:"end", children:[], data:[""]}); // make sure the root is closed.
+
+    //alert("str");
+    var html = document.getElementById("code");
+    var components = toHTML(tree[0].children);
+    alert("Components: " + components)
+    html.innerHTML = components;
+
+
+}
+////////////////////////////////////////////////////////////////////////////////
+function GenerateId(){ return "id" + Math.random().toString(16).slice(2); }
+////////////////////////////////////////////////////////////////////////////////
+// tree is an array of nodes
+////////////////////////////////////////////////////////////////////////////////
+function toHTML(list){
+  var str = "", buf = "", code = "";
+  //var id = "someId";
+  var tabs = [];
+
+for (var i = 0; i < list.length; i++) {
+
+    var children = "", data = "", type = "";
+/*
+        EXAMPLE:      {children:[], data:[], type:"module"}
+*/
+
+    if(list[i].children !== undefined){
+          //var kids = list[i].children;
+          children = toHTML(list[i].children);
       }
-
+    if(list[i].data !== undefined){
+        data = list[i].data[0];
     }
+        type = list[i].type;
+
+
+switch (type) {
+  // Comprehensions and such spell trouble: x = [(i,j) for i=1:3 for j=1:i if i+j == 4]
+        case "stringTippleTic":
+        case "stringTipple":
+        case "stringTic":
+        case "string":  str += '<span class="str">' + data + '</span>';
+              break;
+        case "macro":   str += '<span class="mkr">' + data + '</span>';
+              break;
+        case "keyword": str += '<span class="kwd">' + data + '</span>';
+              break;
+        case "number":  str += '<span class="num">' + data + '</span>';
+              break;
+        //case "": str += '<span class="fnc">' + data + '</span>'; break;
+        case "longComment":
+        case "comment": str += '<div class="cmt closeComment"><span><i class="fa fa-times fa"></i>'
+             + data + '</span><i class="fa fa-commenting fa"></i></div><br>';
+              break;
+        // case "": str += '<div class="line">' + data + '</div>'; break;
+        case "boolean": str += '<span class="bl">' + data + '</span>';
+              break;
+        case "operator":
+        case "punctuation":
+        case "tuple":
+        case "word":
+        case "spaceNewline": str += data; break;
+
+
+        case "print":
+        case "comprehension":
+        case "arrayIndexing":
+        case "generator": str += '<span class="sp">' + data + '</span>';
+              break;
+
+        case "function": str += '<div class="function global" style="z-index: 400; left: 95px; top: 502px;"><div class="head draggable"><i class="fa fa-gears fa"></i><span class="name">'
+        + data + ' </span> <span class="args">' + data + '</span></div><div class="Body">' + children;
+              break;
+        case "JuliaFile": str += '<div class="JuliaFile global" style="z-index: 400; left: 95px; top: 502px;"><div class="head draggable"><i class="fa fa-folder-o fa"></i>' + data + '</div><div class="Body">' + children;
+              break;
+        case "baremodule":
+        case "module": str += '<div class="module " style="z-index: 400; left: 95px; top: 502px;"><div class="head draggable">module ' + data + '</div><div class="Body">' + children;
+              break;
+        case "do": str += '<div class="do"><div class="head"><i class="fa fa-gear fa"></i> ' + data + 'do</div><div class="Body">' + children;
+              break;
+
+        case "quote": str += '<div class="do"><div class="head"><i class="fa fa-gear fa"></i> ' + data + 'quote</div><div class="Body">' + children;
+              break;
+        case "macroDef": str += '<div class="do"><div class="head"><i class="fa fa-gear fa"></i> ' + data + 'macroDef</div><div class="Body">' + children;
+              break;
+        case "while": str += '<div class="while"><div class="head"><i class="fa fa-history fa"></i>while ' + data + '</div><div class="Body">' + children;
+              break;
+        case "type": str += '<div class="type global" style="z-index: 400; left: 95px; top: 502px;"><div class="head draggable"><i class="fa fa-object-ungroup fa"></i><span class="name">'
+        + data + ' </span> <span class="args">' + data + '</span></div><div class="Body">' + children;
+              break;
+        case "structMutable":
+        case "struct": str += '<div class="struct global" style="z-index: 400; left: 95px; top: 502px;"><div class="head draggable"><i class="fa fa-object-group fa"></i><span class="name">'
+        + data + ' </span> <span class="args">' + data + '</span></div><div class="Body">' + children;
+              break;
+
+        case "begin": str +=  '<div class="do"><div class="head"><i class="fa fa-gear fa"></i> ' + data + 'begin</div><div class="Body">' + children;
+              break;
+        case "for": str += '<div class="for"><div class="head">for ' + data + '</div><div class="Body">' + children;
+              break;
+
+        // Tablike starters
+        // var id = GenerateId(); tabs.push(  {tab:"try", id:id}  );
+        case "try": var id = GenerateId(); tabs.push(  {tab:"try", id:id}  );
+        case "if":  buf += '<div id="' + id + '" class="' + type + '" style="display:block;"><div class="head">'
+              + type + '</div><div class="Body">' + children;
+              break;
+
+        // Tablike inner blocks
+        case "catch":
+        case "elseif":
+        case "else":
+        case "finally": var id = GenerateId(); tabs.push(  {tab:"else", id:id}  );
+              buf += '</div></div><div id="' + id + '" class="' + type + '" style="display:none;"><div class="head">' + type + '</div><div class="Body">' + children;
+              break;
+
+        case "end":
+                    if( tabs.length > 0){// end of tabbed block
+                        str += '<div class="tabBox ' + tabs[0].tab + '">'
+                        for (var t in tabs) {
+                            str += '<span class="tablink" onclick="openCity(' + tabs[t].id + ', this)" id="'
+                            + tabs[t].id + '">' + tabs[t].tab + '</span>';
+                        }
+                        str += buf + '<div class="end">end</div> </div></div>   </div>'; // WAS: str.slice(n[i].start, n[i].length)
+                    } else{ // end of normal block
+
+                        str += '<div class="end">end</div> </div></div>'; //  buf +
+                        tabs = []; buf = "";
+                    }
+         break;
+} // switch
+
+
+
+
+
+
+
+
+} // for
+console.log(str)
+ return str;
 }
 ////////////////////////////////////////////////////////////////////////////////
 function printOut(obj){
-   if(obj.match ===null){return;}
+   if(obj === null){return;}
 
     switch (obj.match.length) {
       case 1: // console.log( obj.name + ": " + obj.match[0] );

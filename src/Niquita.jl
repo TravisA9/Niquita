@@ -1,3 +1,5 @@
+
+
 module Niquita
 
 type Point
@@ -18,7 +20,7 @@ end
      println("EMITTING MESSAGE: $msg")
      for (k,v) in connections
          if k != client.id
-             write(v, (usernames[client.id] * ": " * msg[5:end]))
+             write(v, (usernames[client.id] * ": " * msg[5: end]))
          end
      end
  end
