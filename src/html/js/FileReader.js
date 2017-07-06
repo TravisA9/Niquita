@@ -6,8 +6,10 @@ function readSingleFile(e) {
   reader.onload = function(e) {
     var contents = e.target.result;
 
-    displayContents(contents);
-    dumpTokens(contents);
+    //displayContents(contents);
+
+    dumpTokens( '\nJuliaFile C:\\Niquita.jl \n ' + contents +  ' \n end' );
+    codeLoaded();
   };
   reader.readAsText(file);
 }

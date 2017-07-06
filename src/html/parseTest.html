@@ -1,34 +1,54 @@
 <!doctype html>
 <html>
 <head>
-    <title>CodeWin!</title>
+    <title>Niquita</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="css/font-awesome-4.4.0/css/font-awesome.css"></script>
     <link rel="stylesheet" href="css/font-awesome-4.4.0/css/font-awesome.css" type="text/css">
+    <link rel="stylesheet" href="js/zoom/css/reset.css">
+		<link rel="stylesheet" href="js/zoom/css/main.css">
 
     <!-- ========================================================= -->
     <style type="text/css" media="screen">
-    body{ width: 500%; height: 3000px; cursor: grabbing;}
+  .page-body{
+       width: 500%; height: 3000px; cursor: grabbing;
+      zoom: 1.0;
+      -moz-transform: scale(1.0);
+      -webkit-transform: scale(1.0);}
+  .zoomed{zoom: 0.5;
+      -moz-transform: scale(0.5);
+      -webkit-transform: scale(0.5);}
+
+
+
+    body{ width: 500%; height: 3000px; cursor: grabbing; overflow: visible;}
 .global{
 	  position:absolute;
     box-shadow: 1px 1px 12px black;
 }
  /* function try if do for while catch elseif else */
-    .function, .do, .for, .while, .JuliaFile, .module, .type, .struct{
+    .function, .do, .JuliaFile,{
+        /*min-width: 300px;*/
+        width: 600px;
+        margin:8px;
+        display: block;
+        border-radius: 7px;
+    }
+
+    .for, .while, .module, .try, .if, .catch, .elseif, .else,
+    .type, .struct, .begin, .macroDef, .quote{
         min-width: 300px;
         max-width: 600px;
-        margin:5px;
+        margin:8px;
         display: block;
         border-radius: 7px;
     }
 
     .try, .if, .catch, .elseif, .else{
-        min-width: 300px;
-        max-width: 600px;
-        display: block;
         border-radius: 0px 0px 7px 7px;
     }
+
     .head{ padding:5px; border-radius: 7px 7px 0px 0px;}
     .head, .Body{  -webkit-user-modify: read-write;
             -moz-user-modify: read-write;
@@ -44,10 +64,16 @@
  .try .head, .catch .head{ padding: 0px 5px 0px 5px; background: #555; color: white;
    border-bottom: thin solid #4d4dff; border-radius: 0px;}
  .if, .elseif, .else{ background: #333; color: black;}
- .if .head, .elseif .head, .else .head{  padding: 0px 5px 0px 5px;  background: #555; color: white;
+ .if .head, .elseif .head, .else .head{  padding: 0px 5px 0px 5px;  background: #171b2f; color: white;
    border-bottom: thin solid #4080bf; border-radius: 0px;}
- .do{                 background: #001a33; color: white; border: thin   solid #001a33;}
+   .do{               background: #001a33; color: white; border: thin   solid #001a33;}
+   .begin{            background: #143556; color: white; border: thin   solid #99ccff;}
+   .macroDef{         background: #254025; color: white; border: thin   solid #00cc00;}
+   .quote{            background: #613131; color: white; border: thin   solid #ff4d4d;}
+
  .for{                background: #006666; color: black; border: thin   solid #006666;}
+ .for > .head{        background: #006666; color: black; border: thin   solid #006666; border-radius: 7px 7px 0px 0px;}
+ .for > .Body{        background: #333; }
  .while{              background: #558000; color: black; border: thin   solid #558000;}
  .JuliaFile{          background: #252429; color: black; border: medium solid #8a8604; }
  .struct{             background: #3D9970; color: black; border: medium solid #3D9970; }
@@ -91,8 +117,11 @@
   /* ========================================================================== */
   /*                          Text code highlighting                            */
   /* ========================================================================== */
-  .kwd{ color:#66d9ef;}
+  .kwd{ color:#2e8ce2;}
   .str{ color:#a6e22e;}
+  .sp{ text-decoration-line: underline; font-weight: bold; color:#99bcf5;}
+  .gen{ color:#a272ea;}
+
   .pct{ color:mediumgrey;}
   .op{ color:#a6e22e;}
   .fnc{ color:#DAD085;}
@@ -138,7 +167,7 @@
   }
 
   .function{
-  	background: #161719;;
+  	background: #161719;
   	border-color: black;
   }
   .function > .head{
@@ -172,20 +201,95 @@
 <!-- ========================================================= -->
 <!-- ========================================================= -->
 </head>
-<body>
+<body  id="desktop" class="page-body zoomed">
+  <!-- ========================================================= -->
+  <input type="button" id="example" value="Example Project" onclick="makeExampleProj();"/>
+  <div id="demo"></div>
   <!-- ========================================================= -->
   <input type="file" id="file-input" />
   <h3>Contents of the file:</h3>
   <pre id="file-content"></pre>
-  <div id="code">Hello!</div>
+  <div id="code" >Hello!</div>
   <!-- ========================================================= -->
+  <!--script src="js/zoom/zoom.js"></script-->
+  <script>
+  var zoomed = false;
+    document.querySelector( '.page-body' ).addEventListener( 'dblclick', function( event ) {
+          event.preventDefault();
+          if(zoomed == true){
+            var Page = event.target;
+            $("#desktop").addClass('zoomed')
+            //Page.style.zoom = 1.5;
+            //Page.style.MozTransform = 'scale(1.5)';
+            //Page.style.WebkitTransform = 'scale(1.5)';
+            //document.getElementById('Body');
+          //  var zoom = parseInt(Page.style.zoom) + 10 +'%'
+            console.log("hello")
+            //Page.style.zoom = zoom;
+            zoomed = false;
+          }else{
+            var Page = event.target;
+            $("#desktop").removeClass('zoomed')
+            //Page.style.zoom = 0.5;
+            //Page.style.MozTransform = 'scale(0.5)';
+            //Page.style.WebkitTransform = 'scale(0.5)';
+            //document.getElementById('Body');
+            //var zoom = parseInt(Page.style.zoom) - 10 +'%'
+            console.log("hello")
+            zoomed = true;
+          }
+    } );
 
-
+  </script>
   <script src="js/test.js"        type="text/javascript" ></script>
-  <script src="js/ParseCode.js"        type="text/javascript" ></script>
-  <script src="js/parse.js"        type="text/javascript" ></script>
   <script src="js/dragable.js"     type="text/javascript" ></script>
-  <script src="js/JuliaParser.js"     type="text/javascript" ></script>
+  <!--script src="js/ParseCode.js"        type="text/javascript" ></script-->
+  <!--script src="js/parse.js"        type="text/javascript" ></script-->
+  <!--script src="js/JuliaParser.js"     type="text/javascript" ></script-->
   <script src="js/FileReader.js"     type="text/javascript" ></script>
+
+<script type="text/javascript" >
+////////////////////////////////////////////////////////////////////////////////
+var files = ['Julia/properties.jl', 'Julia/tracer.jl', 'Julia/types.jl']; // , 'Julia/types.jl' , 'Julia/vector.jl'
+//var files = ['Julia/fileOne.jl', 'Julia/fileTwo.jl', 'Julia/fileThree.jl'];
+
+var promises = [ ];
+ Project = {text:""};
+makeExampleProj();
+////////////////////////////////////////////////////////////////////////////////
+function myAsyncFunction(url) {
+      return new Promise((resolve, reject) => {
+                 const xhr = new XMLHttpRequest();
+                 xhr.open("GET", url);
+                 xhr.onload = () => {
+                   Project.text += '\nJuliaFile ' + url + ' \n' + xhr.responseText + 'end \n ';
+                   resolve( '\nJuliaFile ' + url + ' \n' + xhr.responseText + 'end \n  ');
+                 };
+                 xhr.onerror = () => reject(xhr.statusText);
+                 xhr.send();
+
+      })
+}
+////////////////////////////////////////////////////////////////////////////////
+function makeExampleProj(){
+
+      //Project.text = "";
+      for ( var i in files) {
+        promises.push(  myAsyncFunction(files[i])  );
+      }
+
+      Promise.all(promises).then(values => {
+          alert(Project.text);
+          dumpTokens( Project.text );
+          codeLoaded();
+      })
+
+}
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+</script>
+
+
 
 </body></html>

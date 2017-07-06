@@ -2,19 +2,35 @@
 
 module Niquita
 
+str = "hello this is a string!"
+str = 'hello this is a string!'
+str = """hello this is a string!"""
+str = '''hello this is a string!'''
+
 type Point
   x::Float32
   y::Float32
   Point(x,y) = new(x,y)
 end
 
- if something
-   c = a + b # Some coment
- elseif somethingelse
-   c = a * b
- else
-   c = a - b
- end
+x->begin
+   c = A + B;
+end
+
+
+macro sayhello()
+           return :( println("Hello, world!") )
+end
+
+
+ex = quote
+           x = 1
+           y = 2
+           x + y
+end
+
+
+
 
  if startswith(msg, "say:")
      println("EMITTING MESSAGE: $msg")
@@ -38,5 +54,14 @@ struct Foo
            qux::Float64
 end
 # package code goes here
+
+
+if something
+  c = a + b # Some coment
+elseif somethingelse
+  c = a * b
+else
+  c = a - b
+end
 
 end
