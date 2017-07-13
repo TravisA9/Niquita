@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="css/windows.css" type="text/css">
+  <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script type="text/javascript" src="css/font-awesome-4.4.0/css/font-awesome.css"></script>
+  <link rel="stylesheet" href="css/font-awesome-4.4.0/css/font-awesome.css" type="text/css">
+</head>
+<!-- ========================================================= -->
+
+
+<!-- ========================================================= -->
+<style>
+    .axis line {
+      fill: none; stroke: steelblue;
+      shape-rendering: crispEdges;
+      vector-effect: non-scaling-stroke;
+    }
+</style>
+<!-- ========================================================= -->
+<body style="background: #333;">
+  <div id="desktop" style="height: vh;">  </div>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script>
+
+var margin = {top: 0, right: 0, bottom: 0, left: 0},
+    width = 5001, height = 5001;
+
+var zoom = d3.behavior.zoom()
+    .scaleExtent([-10, 1])
+    .on("zoom", zoomed);
+
+var drag = d3.behavior.drag()
+    .origin(function(d) { return d; })
+    .on("dragstart", dragstarted)
+    .on("drag", dragged)
+    .on("dragend", dragended);
+
+var svg = d3.select("#desktop").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.right + ")")
+    .on('click', function(){flipflop = true; svg.call(zoom);});
+  //  .call(zoom);
+  /*  //svg.on('click', clickFn);
+    var flipflop = true;
+    if (flipflop) {
+        svg.call(zoom);
+    } else {
+        svg.on('zoom', null);
+    }*/
+
+
+
+var rect = svg.append("rect")
+    .attr("width", width)
+    .attr("height", height)
+    .style("fill", "none")
+    .style("pointer-events", "all");
+
+var container = svg.append("g");
+
+container.append("g")
+    .attr("class", "x axis")
+  .selectAll("line")
+    .data(d3.range(0, width, 100))
+  .enter().append("line")
+    .attr("x1", function(d) { return d; }).attr("y1", 0)
+    .attr("x2", function(d) { return d; }) .attr("y2", height);
+
+container.append("g")
+    .attr("class", "y axis")
+  .selectAll("line")
+    .data(d3.range(0, height, 100))
+  .enter().append("line")
+    .attr("x1", 0).attr("y1", function(d) { return d; })
+    .attr("x2", width).attr("y2", function(d) { return d; });
+
+
+
+
+            var fo = container.append('foreignObject')
+                .attr({ 'x': 0, 'y': 0, 'width': width, 'height': height, 'class': 'svg-tooltip', 'overflow': 'visible' })
+                .on("click", console.log("clicked"))
+                .on("mousedown", function() { d3.event.stopPropagation(); })
+                .on("mousedown", function() { d3.event.stopPropagation(); })
+                .on("scroll", function() { d3.event.stopPropagation(); })
+                .on("mouseup", function() { d3.event.stopPropagation(); })
+                .on("click", function() { d3.event.stopPropagation(); });
+            var div = fo.append('xhtml:div')
+                .append('div')
+                .attr({ 'class': 'tooltip', 'id': 'code', 'left': '0px', 'right':'0px', 'width': width, 'height': height, 'position':'static' });
+          /*  var foHeight = div[0][0].getBoundingClientRect().height;
+            fo.attr({ 'height': foHeight });*/
+
+
+var desktop = document.getElementById("code");
+
+//setTimeout( function (){
+  desktop.innerHTML = '<div onclick="disableZoom()" style="width:300px; top:100px; display:block; position: relative;" class="function global"><div class="head draggable"><i class="fa fa-gears fa"></i><span class="name">MyFunction</span> <span class="args">x::Float32, y::Float32</span></div><div class="Body">This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!\n This is a test!</div></div>';
+//}, 500);
+
+function disableZoom() {
+  flipflop = false;
+  svg.on('.zoom', null);
+  //alert("hello!");
+}
+
+
+function zoomed() {
+  container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+}
+
+function dragstarted(d) {
+  d3.select(this).classed("dragging", true);
+}
+
+function dragged(d) {
+  d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+}
+
+function dragended(d) {
+  d3.select(this).classed("dragging", false);
+}
+
+</script>

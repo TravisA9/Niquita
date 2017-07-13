@@ -270,7 +270,7 @@ function getNextToken(str){
         return { action:rules[i].action, name:rules[i].name, match:result};
       }
     }
-    alert("Warning: no token match! -->" + str.slice(0, 50) + '<-- length:' + str.length)
+    //alert("Warning: no token match! -->" + str.slice(0, 50) + '<-- length:' + str.length)
   return null;
 }
 ////////////////////////////////////////////////////////////////////////////////

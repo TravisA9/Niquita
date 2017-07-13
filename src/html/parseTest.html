@@ -11,35 +11,48 @@
 
     <!-- ========================================================= -->
     <style type="text/css" media="screen">
-  .page-body{
-       width: 500%; height: 3000px; cursor: grabbing;
+  /*.page-body, */
+  #code{
+    transition: all .8s ease-in-out;
       zoom: 1.0;
       -moz-transform: scale(1.0);
-      -webkit-transform: scale(1.0);}
-  .zoomed{zoom: 0.5;
-      -moz-transform: scale(0.5);
-      -webkit-transform: scale(0.5);}
+      -webkit-transform: scale(1.0);
+      position: fixed;
+      margin-left: 0px;
+      left: 0px;
+      width: 500%; height: 3000px; cursor: grabbing; /*overflow: visible;*/
+      border: thin black solid;
+    }
+  .small{zoom: 0.75;
+    transition: all .8s ease-in-out;
+      -moz-transform: scale(0.75);
+      -webkit-transform: scale(0.75);}
+  .tiny{ zoom: 0.5;
+          -moz-transform: scale(0.5);
+          -webkit-transform: scale(0.5);
+        transition: all .8s ease-in-out;}
 
 
 
-    body{ width: 500%; height: 3000px; cursor: grabbing; overflow: visible;}
+     body{ overflow: scroll;}
+  /*  body{ width: 500%; height: 3000px; cursor: grabbing; overflow: auto;}*/
 .global{
 	  position:absolute;
     box-shadow: 1px 1px 12px black;
 }
  /* function try if do for while catch elseif else */
     .function, .do, .JuliaFile,{
-        /*min-width: 300px;*/
-        width: 600px;
+        width: 300px;
         margin:8px;
         display: block;
         border-radius: 7px;
+
     }
 
     .for, .while, .module, .try, .if, .catch, .elseif, .else,
     .type, .struct, .begin, .macroDef, .quote{
         min-width: 300px;
-        max-width: 600px;
+        /*max-width: 600px;*/
         margin:8px;
         display: block;
         border-radius: 7px;
@@ -52,7 +65,8 @@
     .head{ padding:5px; border-radius: 7px 7px 0px 0px;}
     .head, .Body{  -webkit-user-modify: read-write;
             -moz-user-modify: read-write;
-            user-modify: read-write; }
+            user-modify: read-write;}
+    .Body{  resize: both; overflow: auto;}
 
     .Body *:not(i){ /*font-family: "Lucida Console", "Courier New";*/
             	font-family: Menlo, Consolas, 'DejaVu Sans Mono', monospace;
@@ -201,51 +215,20 @@
 <!-- ========================================================= -->
 <!-- ========================================================= -->
 </head>
-<body  id="desktop" class="page-body zoomed">
+<body>
   <!-- ========================================================= -->
   <input type="button" id="example" value="Example Project" onclick="makeExampleProj();"/>
   <div id="demo"></div>
   <!-- ========================================================= -->
   <input type="file" id="file-input" />
   <h3>Contents of the file:</h3>
-  <pre id="file-content"></pre>
-  <div id="code" >Hello!</div>
+  <div id="code"  class=" " >Hello!</div>
   <!-- ========================================================= -->
   <!--script src="js/zoom/zoom.js"></script-->
-  <script>
-  var zoomed = false;
-    document.querySelector( '.page-body' ).addEventListener( 'dblclick', function( event ) {
-          event.preventDefault();
-          if(zoomed == true){
-            var Page = event.target;
-            $("#desktop").addClass('zoomed')
-            //Page.style.zoom = 1.5;
-            //Page.style.MozTransform = 'scale(1.5)';
-            //Page.style.WebkitTransform = 'scale(1.5)';
-            //document.getElementById('Body');
-          //  var zoom = parseInt(Page.style.zoom) + 10 +'%'
-            console.log("hello")
-            //Page.style.zoom = zoom;
-            zoomed = false;
-          }else{
-            var Page = event.target;
-            $("#desktop").removeClass('zoomed')
-            //Page.style.zoom = 0.5;
-            //Page.style.MozTransform = 'scale(0.5)';
-            //Page.style.WebkitTransform = 'scale(0.5)';
-            //document.getElementById('Body');
-            //var zoom = parseInt(Page.style.zoom) - 10 +'%'
-            console.log("hello")
-            zoomed = true;
-          }
-    } );
 
-  </script>
   <script src="js/test.js"        type="text/javascript" ></script>
+  <script src="js/desktopEvents.js"     type="text/javascript" ></script>
   <script src="js/dragable.js"     type="text/javascript" ></script>
-  <!--script src="js/ParseCode.js"        type="text/javascript" ></script-->
-  <!--script src="js/parse.js"        type="text/javascript" ></script-->
-  <!--script src="js/JuliaParser.js"     type="text/javascript" ></script-->
   <script src="js/FileReader.js"     type="text/javascript" ></script>
 
 <script type="text/javascript" >
@@ -279,7 +262,7 @@ function makeExampleProj(){
       }
 
       Promise.all(promises).then(values => {
-          alert(Project.text);
+          //alert(Project.text);
           dumpTokens( Project.text );
           codeLoaded();
       })

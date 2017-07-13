@@ -7,7 +7,7 @@ function readSingleFile(e) {
     var contents = e.target.result;
 
     //displayContents(contents);
-
+    tree = []
     dumpTokens( '\nJuliaFile C:\\Niquita.jl \n ' + contents +  ' \n end' );
     codeLoaded();
   };

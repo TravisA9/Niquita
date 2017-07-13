@@ -3,44 +3,8 @@ var selected = null, // Object of the element to be moved
     x_elem = 0, y_elem = 0; // Stores top, left values (edge) of the element
 var topWindow = null;
 
-
-///////////////////////////// desktop //////////////////////////////////////////
-var curYPos, curXPos, curDown;
-desktop = document.getElementById('code')
-window.addEventListener('mousemove', function(e){
-  if(curDown){
-
-    window.scrollTo(document.body.scrollLeft + (curXPos - e.pageX), document.body.scrollTop + (curYPos - e.pageY));
-  }
-  event.stopPropagation();
-});
-
-window.addEventListener('mousedown', function(e){
-  curYPos = e.pageY;
-  curXPos = e.pageX;
-  curDown = true;
-  event.stopPropagation();
-});
-
-window.addEventListener('mouseup', function(e){
-  curDown = false;
-});
-
 ////////////////////////////////////////////////////////////////////////////////
-
-
 var codeLoaded = function(){
-/*
- alert("codeLoaded")
-// this is the link thingie...
-   test = document.getElementById("test")
-   test.addEventListener('mousedown', function(e){
-    // e.target.getAttribute("d"); // getter
-   e.target.setAttribute("d", "M0,3 C100,3 100,200 200,200"); // setter .setAttribute("class", "democlass")
-    e.target.parentNode.setAttribute("height", "210px") //curYPos = e.pageY; //curXPos = e.pageX; //curDown = true;
-     event.stopPropagation();
-   });*/
-
    // Bind the functions...
    var elems = document.getElementsByClassName('draggable');
 
@@ -54,9 +18,6 @@ var codeLoaded = function(){
              var elem = elems[i];
                elem.onclick = function () { FocusWindow(this); };
    };
-
-
-
 };
 
 function FocusWindow(elem) {
@@ -71,23 +32,35 @@ function FocusWindow(elem) {
     //return topWindow
 }
 // Will be called when user starts dragging an element
+scale = 1;
 function _drag_init(elem) {
-//event.stopPropagation();
+    //
+    var desktop = document.getElementById('code'); // $( "#code" ).
+
+    if(desktop.classList.contains('tiny'))  { scale = 3; }else
+    if(desktop.classList.contains('small')) { scale = 2; }else
+    { scale = 1; }
+//alert("Drag " + scale)
     FocusWindow(elem)
        selected = elem;
        var rect = elem.getBoundingClientRect();
-    x_elem = x_pos - selected.offsetLeft;
-    y_elem = y_pos - selected.offsetTop;
+    x_elem = (x_pos) - (selected.offsetLeft);
+    y_elem = (y_pos) - (selected.offsetTop );
+    //window.scrollTo(0, 0);
+    //alert(desktop.offsetTop);
+    event.stopPropagation();
 }
 
-// Will be called when user dragging an element
+// Called while user is dragging an element
 function _move_elem(e) {
-    x_pos = document.all ? window.event.clientX : e.pageX;
-    y_pos = document.all ? window.event.clientY : e.pageY;
+
+    x_pos = (document.all ? window.event.clientX : e.pageX)*scale;
+    y_pos = (document.all ? window.event.clientY : e.pageY)*scale;
     if (selected !== null) {
-        selected.style.left = (x_pos - x_elem) + 'px';
-        selected.style.top = (y_pos - y_elem) + 'px'; // not sure yet why I had to subtract 35!
+        selected.style.left = ((x_pos - x_elem)) + 'px';
+        selected.style.top = ((y_pos - y_elem)) + 'px'; // not sure yet why I had to subtract 35!
     }
+    e.stopPropagation();
 }
 
 // Destroy the object when we are done
@@ -95,7 +68,6 @@ function _destroy() {
     selected = null;
     x_pos = 0, y_pos = 0, // Stores x & y coordinates of the mouse pointer
     x_elem = 0, y_elem = 0; // Stores top, left values (edge) of the element
-
 }
 
 

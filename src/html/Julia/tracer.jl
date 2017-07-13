@@ -95,19 +95,9 @@ function render()
 	pixelWidth = get(rtp, "pixelWidth", 0)
 	#imageProperties = get(rtp, "imageProperties", nothing)
 
-	# Setup image array
-	# image = fill(0x00, (3, imageWidth, imageHeight))
+	# First set up image array
 	image = fill(RGB(0,0.5,0), imageWidth, imageHeight)
-	#imageArray = rand(imageWidth, imageHeight)
-	#imageArray = colorview(RGB{N0f8}, imageWidth, imageHeight)
-	#imageArray = colorview(RGB, a )
 
-	# Initialize the image 
-	#println(imageProperties["colorspace"])
- #image = ImageMeta(imageArray, imageProperties)
-#image = Images.Image(imageArray, imageProperties)
-
-	#@parallel
 	for x in 1:imageWidth
 		for y in 1:imageHeight
 			traceWorker(x, y, image, cameraPos, lightSource, objects)
