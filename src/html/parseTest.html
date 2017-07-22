@@ -6,223 +6,26 @@
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="css/font-awesome-4.4.0/css/font-awesome.css"></script>
     <link rel="stylesheet" href="css/font-awesome-4.4.0/css/font-awesome.css" type="text/css">
-    <link rel="stylesheet" href="js/zoom/css/reset.css">
-		<link rel="stylesheet" href="js/zoom/css/main.css">
+		<link rel="stylesheet" href="css/windows.css">
 
     <!-- ========================================================= -->
-    <style type="text/css" media="screen">
-  /*.page-body, */
-  #code{
-    transition: all .8s ease-in-out;
-      zoom: 1.0;
-      -moz-transform: scale(1.0);
-      -webkit-transform: scale(1.0);
-      position: fixed;
-      margin-left: 0px;
-      left: 0px;
-      width: 500%; height: 3000px; cursor: grabbing; /*overflow: visible;*/
-      border: thin black solid;
-    }
-  .small{zoom: 0.75;
-    transition: all .8s ease-in-out;
-      -moz-transform: scale(0.75);
-      -webkit-transform: scale(0.75);}
-  .tiny{ zoom: 0.5;
-          -moz-transform: scale(0.5);
-          -webkit-transform: scale(0.5);
-        transition: all .8s ease-in-out;}
-
-
-
-     body{ overflow: scroll;}
-  /*  body{ width: 500%; height: 3000px; cursor: grabbing; overflow: auto;}*/
-.global{
-	  position:absolute;
-    box-shadow: 1px 1px 12px black;
-}
- /* function try if do for while catch elseif else */
-    .function, .do, .JuliaFile,{
-        width: 300px;
-        margin:8px;
-        display: block;
-        border-radius: 7px;
-
-    }
-
-    .for, .while, .module, .try, .if, .catch, .elseif, .else,
-    .type, .struct, .begin, .macroDef, .quote{
-        min-width: 300px;
-        /*max-width: 600px;*/
-        margin:8px;
-        display: block;
-        border-radius: 7px;
-    }
-
-    .try, .if, .catch, .elseif, .else{
-        border-radius: 0px 0px 7px 7px;
-    }
-
-    .head{ padding:5px; border-radius: 7px 7px 0px 0px;}
-    .head, .Body{  -webkit-user-modify: read-write;
-            -moz-user-modify: read-write;
-            user-modify: read-write;}
-    .Body{  resize: both; overflow: auto;}
-
-    .Body *:not(i){ /*font-family: "Lucida Console", "Courier New";*/
-            	font-family: Menlo, Consolas, 'DejaVu Sans Mono', monospace;
-            	font-size: 18px;
-            	line-height: 1.4;
-            }
-    /*.Body > div{ margin-left: 15px; margin-right: 5px;}*/
- .try, .catch{        background: #333; color: black;}
- .try .head, .catch .head{ padding: 0px 5px 0px 5px; background: #555; color: white;
-   border-bottom: thin solid #4d4dff; border-radius: 0px;}
- .if, .elseif, .else{ background: #333; color: black;}
- .if .head, .elseif .head, .else .head{  padding: 0px 5px 0px 5px;  background: #171b2f; color: white;
-   border-bottom: thin solid #4080bf; border-radius: 0px;}
-   .do{               background: #001a33; color: white; border: thin   solid #001a33;}
-   .begin{            background: #143556; color: white; border: thin   solid #99ccff;}
-   .macroDef{         background: #254025; color: white; border: thin   solid #00cc00;}
-   .quote{            background: #613131; color: white; border: thin   solid #ff4d4d;}
-
- .for{                background: #006666; color: black; border: thin   solid #006666;}
- .for > .head{        background: #006666; color: black; border: thin   solid #006666; border-radius: 7px 7px 0px 0px;}
- .for > .Body{        background: #333; }
- .while{              background: #558000; color: black; border: thin   solid #558000;}
- .JuliaFile{          background: #252429; color: black; border: medium solid #8a8604; }
- .struct{             background: #3D9970; color: black; border: medium solid #3D9970; }
- .type{               background: #85144b; color: black; border: medium solid #85144b; }
- .struct .Body > div:nth-child(odd){  background: #252429; }
- .Body > .line:not(.Body){padding-left:15px;}
- /*.struct .Body > div:nth-child(even){  background: #252429; }*/
- .type   .Body>div:nth-child(odd){  background: #252429; }
-
-   .tabBox.try{ border-radius: 7px; margin:5px; background:  #4d4dff; padding:1px;}
-   .tabBox.if { border-radius: 7px; margin:5px; background:  #4080bf; padding:1px;}
-   .tablink{ cursor: pointer;
-     line-height: 1.4; color: black; background-color: #b3b3ff; border-radius: 7px; padding:3px; margin:3px;}
-   .tablink:hover{ background-color: #e6e6ff; border-radius: 7px;}
-   .Body{
-        color:white;
-        background: #333;
-        /*padding:5px;*/
-        border-radius: 0px 0px 7px 7px;
-        cursor: text;
-  }
-  .module {border: medium solid #1286ad; color: grey; border-radius: 12px; margin: 10px; }
-  .module .Body{ background: #111;}
-
-  .JuliaFile > .head{ color: white; background: #8a8604; }
-  .end{ display: none; }
-  .head .name{font-weight: 600;}
-  .head .args{
-  	cursor: text;
-  	background: #262a33;
-  	color: #d1e44c;
-  	min-width: 15px;
-  	height: 20px;
-  	padding-left: 6px;
-  	padding-right: 6px;
-  	padding-bottom:2px;
-  	font-weight: 300;
-  	border-radius: 3px;
-    white-space: nowrap;
-  }
-  /* ========================================================================== */
-  /*                          Text code highlighting                            */
-  /* ========================================================================== */
-  .kwd{ color:#2e8ce2;}
-  .str{ color:#a6e22e;}
-  .sp{ text-decoration-line: underline; font-weight: bold; color:#99bcf5;}
-  .gen{ color:#a272ea;}
-
-  .pct{ color:mediumgrey;}
-  .op{ color:#a6e22e;}
-  .fnc{ color:#DAD085;}
-  .num, .bl{ color:#ae81ff;}
-  .mkr{ color:#0ab791;}
-  .cmt{
-  			/*padding: 6px;*/
-  			position: relative;
-  			display: inline-block;
-  		  }
-  .cmt .fa-commenting{ color:#87C38A; margin-left: 1px;}
-  .cmt .fa-times{ color:#b33841; margin-right: 1px;}
-  .cmt .fa-times:hover{ cursor: pointer;}
-  .cmt span{  display: none; color: #8bc7a4;;
-  						border-radius: 5px; padding: 5px;
-  						border: thin solid grey;
-  				    width: 220px;
-  				    /*text-align: center;*/
-
-  				    position: absolute;
-  						left: 0px; top:0px;
-  				    z-index: 1;
-
-
-  					}
-  						.cmt:hover span{ display: block; background: #262a33;}
-  /*.cmt:hover .fa-commenting{ display: none; }*/
-  /* ///////////////////////////////////////////////////////////////////////// */
-  /* ----- BOXES -----*/
-  .global{
-  	cursor: move;
-    	margin: 5px;
-    	border-radius: 7px;
-  	color: #e2e2e2;
-  	border-width: 0px 1px 2px 1px;
-  }
-  .head{
-  	padding: 0px;
-  	border-radius: 7px 7px 0px 0px;
-  }
-  .head div, .head span, .head i{
-  	margin: 5px;
-  }
-
-  .function{
-  	background: #161719;
-  	border-color: black;
-  }
-  .function > .head{
-  	background: #727272; /* Old browsers */
-  	background: -moz-linear-gradient(top,  #727272 0%, #0e0e0e 58%, #0e0e0e 60%); /* FF3.6-15 */
-  	background: -webkit-linear-gradient(top,  #727272 0%,#0e0e0e 58%,#0e0e0e 60%); /* Chrome10-25,Safari5.1-6 */
-  	background: linear-gradient(to bottom,  #727272 0%,#0e0e0e 58%,#0e0e0e 60%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-   }
-   .JuliaFile > .head{
-    background: #252429; /* Old browsers */
-    background: -moz-linear-gradient(top,  #727272 0%, #8a8604 58%, #8a8604 60%);
-    background: -webkit-linear-gradient(top,  #727272 0%,#8a8604 58%,#8a8604 60%);
-    background: linear-gradient(to bottom,  #727272 0%,#8a8604 58%,#8a8604 60%); }
-    .struct > .head{
-     background: #3D9970; /* Old browsers */
-     background: -moz-linear-gradient(top,  #727272 0%, #3D9970 58%, #3D9970 60%);
-     background: -webkit-linear-gradient(top,  #727272 0%,#3D9970 58%,#3D9970 60%);
-     background: linear-gradient(to bottom,  #727272 0%,#3D9970 58%,#3D9970 60%); }
-     .type > .head{
-      background: #85144b; /* Old browsers */
-      background: -moz-linear-gradient(top,  #727272 0%, #85144b 58%, #85144b 60%);
-      background: -webkit-linear-gradient(top,  #727272 0%,#85144b 58%,#85144b 60%);
-      background: linear-gradient(to bottom,  #727272 0%,#85144b 58%,#85144b 60%); }
-    /*.JuliaFile{          background:  #252429; color: black; border: medium solid #8a8604; }
-    .struct{           background:  #3D9970; color: black; border: medium solid #3D9970; }
-    .type{           background:  #85144b; color: black; border: medium solid #85144b; }*/
-
-
-</style>
-
+    <style type="text/css" media="screen"></style>
 <!-- ========================================================= -->
 <!-- ========================================================= -->
 </head>
 <body>
   <!-- ========================================================= -->
-  <input type="button" id="example" value="Example Project" onclick="makeExampleProj();"/>
+<!--  <input type="button" id="example" value="Example Project" onclick="makeExampleProj();"/>
   <div id="demo"></div>
-  <!-- ========================================================= -->
   <input type="file" id="file-input" />
   <h3>Contents of the file:</h3>
-  <div id="code"  class=" " >Hello!</div>
+-->
+  <div id="desktop" style="background-color: #333;">
+    <svg height="5000" width="5000" x="1" y="1" style="position: absolute;">
+      <g id="lines" height="5000" width="5000" x="0" y="0" ></g>
+    </svg>
+    <div id="code" style="background none; position: absolute;" spellcheck="false" class=" " >No code loaded yet!</div>
+  </div>
   <!-- ========================================================= -->
   <!--script src="js/zoom/zoom.js"></script-->
 
@@ -232,6 +35,33 @@
   <script src="js/FileReader.js"     type="text/javascript" ></script>
 
 <script type="text/javascript" >
+var width = 5000, height = 5000;
+insertSVG();
+////////////////////////////////////////////////////////////////////////////////
+///////////////////////// Insert svg lines /////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+function insertSVG(){
+  for (var i = 1; i < 5000; i+=100) {
+      var LineH = document.createElementNS('http://www.w3.org/2000/svg','line');
+      LineH.setAttribute('id','line2');
+      LineH.setAttribute('x1','0');
+      LineH.setAttribute('y1',i);
+      LineH.setAttribute('x2','5000');
+      LineH.setAttribute('y2',i);
+      LineH.setAttribute("stroke", "steelblue")
+      document.getElementById('lines').append(LineH);
+
+      var LineV = document.createElementNS('http://www.w3.org/2000/svg','line');
+      LineV.setAttribute('id','line2');
+      LineV.setAttribute('x1',i);
+      LineV.setAttribute('y1','0');
+      LineV.setAttribute('x2',i);
+      LineV.setAttribute('y2','5000');
+      LineV.setAttribute("stroke", "steelblue")
+      document.getElementById('lines').append(LineV);
+  }
+
+}
 ////////////////////////////////////////////////////////////////////////////////
 var files = ['Julia/properties.jl', 'Julia/tracer.jl', 'Julia/types.jl']; // , 'Julia/types.jl' , 'Julia/vector.jl'
 //var files = ['Julia/fileOne.jl', 'Julia/fileTwo.jl', 'Julia/fileThree.jl'];

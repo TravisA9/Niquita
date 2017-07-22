@@ -177,12 +177,15 @@ switch (type) {
         case "generator": str += '<span class="gen">' + data + '</span>';
               break;
 
-        case "function":
         case "JuliaFile":
+        str += '<div class="' + type + ' global" style="z-index: 400; left: 95px; top: 502px;"><div class="head draggable"><i class="fa fa-gears fa"></i><span class="name"></span> <span class="args">' + data + '</span></div><div class="Body">' + children;
+              break;
+
+        case "function":
         case "type":
         case "struct":
         str += '<div class="' + type + ' global" style="z-index: 400; left: 95px; top: 502px;"><div class="head draggable"><i class="fa fa-gears fa"></i><span class="name">'
-        + data + ' </span> <span class="args">' + data + '</span></div><div class="Body">' + children;
+        + data + ' </span> <span class="args">' + dats + '</span></div><div class="Body">' + children;
               break;
 
               case "baremodule":
@@ -208,7 +211,7 @@ switch (type) {
         // var id = GenerateId(); tabs.push(  {tab:"try", id:id}  );
         case "try":
         case "if":  var id = GenerateId(); tabs.push(  {tab:type, id:id}  );
-                    buf += '<div id="' + id + '" class="' + type + '" style="display:block;"><div class="head">'
+                    buf += '<div id="' + id + '" class="' + type + ' toggle" style="display:block;"><div class="head">'
               + data + '</div><div class="Body">' + children;
               break;
 
@@ -217,14 +220,14 @@ switch (type) {
         case "elseif":
         case "else":
         case "finally": var id = GenerateId(); tabs.push(  {tab:type, id:id}  );
-              buf += '</div></div><div id="' + id + '" class="' + type + '" style="display:none;"><div class="head">' + data + '</div><div class="Body">' + children;
+              buf += '</div></div><div id="' + id + '" class="' + type + ' toggle" style="display:none;"><div class="head">' + data + '</div><div class="Body">' + children;
               break;
 
         case "end":
                     if( tabs.length > 0){// end of tabbed block
                         str += '<div class="tabBox ' + tabs[0].tab + '">'
                         for (var t in tabs) {
-                            str += '<span class="tablink" onclick="openCity(' + tabs[t].id + ', this)" id="'
+                            str += '<span class="tablink" data-id="'
                             + tabs[t].id + '">' + tabs[t].tab + '</span>';
                         }
                         str += buf + '<div class="end">end</div> </div></div>   </div>'; // WAS: str.slice(n[i].start, n[i].length)
