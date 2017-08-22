@@ -4,7 +4,7 @@
     <title>Niquita</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="css/font-awesome-4.4.0/css/font-awesome.css"></script>
+    <!--script type="text/javascript" src="css/font-awesome-4.4.0/css/font-awesome.css"></script-->
     <link rel="stylesheet" href="css/font-awesome-4.4.0/css/font-awesome.css" type="text/css">
 		<link rel="stylesheet" href="css/windows.css">
 
@@ -13,7 +13,8 @@
 <!-- ========================================================= -->
 <!-- ========================================================= -->
 </head>
-<body>
+<body style=" ">
+  <!--img src="/travis/Niquita/html/sunflower.jpg" alt=""-->
   <!-- ========================================================= -->
 <!--  <input type="button" id="example" value="Example Project" onclick="makeExampleProj();"/>
   <div id="demo"></div>
@@ -25,13 +26,16 @@
       <g id="lines" height="5000" width="5000" x="0" y="0" ></g>
     </svg>
     <div id="code" style="background none; position: absolute;" spellcheck="false" class=" " >No code loaded yet!</div>
+  <!-- ========================= CONTROL BOXES ============================ -->
+  <!-- ==================================================================== -->
   </div>
   <!-- ========================================================= -->
   <!--script src="js/zoom/zoom.js"></script-->
 
-  <script src="js/test.js"        type="text/javascript" ></script>
-  <script src="js/desktopEvents.js"     type="text/javascript" ></script>
-  <script src="js/dragable.js"     type="text/javascript" ></script>
+  <script src="js/test.js"           type="text/javascript" ></script>
+  <script src="js/cursor.js"         type="text/javascript" ></script>
+  <script src="js/desktopEvents.js"  type="text/javascript" ></script>
+  <script src="js/dragable.js"       type="text/javascript" ></script>
   <script src="js/FileReader.js"     type="text/javascript" ></script>
 
 <script type="text/javascript" >
@@ -63,7 +67,7 @@ function insertSVG(){
 
 }
 ////////////////////////////////////////////////////////////////////////////////
-var files = ['Julia/properties.jl', 'Julia/tracer.jl', 'Julia/types.jl']; // , 'Julia/types.jl' , 'Julia/vector.jl'
+var files = ['Julia/properties.jl', 'Julia/tracer.jl', 'Julia/types.jl', 'Julia/vector.jl']; // , 'Julia/types.jl'
 //var files = ['Julia/fileOne.jl', 'Julia/fileTwo.jl', 'Julia/fileThree.jl'];
 
 var promises = [ ];
@@ -86,14 +90,13 @@ function myAsyncFunction(url) {
 ////////////////////////////////////////////////////////////////////////////////
 function makeExampleProj(){
 
-      //Project.text = "";
       for ( var i in files) {
         promises.push(  myAsyncFunction(files[i])  );
       }
 
       Promise.all(promises).then(values => {
-          //alert(Project.text);
-          dumpTokens( Project.text );
+          document.getElementById("code").innerHTML = dumpTokens( Project.text );
+          // toHTML(tree[0].children);
           codeLoaded();
       })
 
@@ -102,7 +105,4 @@ function makeExampleProj(){
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 </script>
-
-
-
 </body></html>

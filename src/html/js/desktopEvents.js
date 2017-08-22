@@ -5,36 +5,140 @@ var curYPos, curXPos, curDown, move;
 var clicks = 0;
 var zoomed = ''; // 'tiny'  'small' or ''
 desktop = document.getElementById('code');
+var value = {val: 0, x:0, y:0};
+var eventType = "";
 ////////////////////////////////////////////////////////////////////////////////
 desktop.addEventListener('mousemove', function(e){
   if(curDown){
-      move = true;
-      console.log(e.pageX)
+    move = true;
+    if(eventType == "valueDrag"){
+        var x = (e.pageX-value.x);
+        var y = (e.pageY-value.y)
+        if( y > 10){
+              value.element.innerHTML = value.val + (x * (0.1/y)) ;
+        }
+        else{ value.element.innerHTML = value.val + x; }
+        e.preventDefault();
+    } else if(eventType == "boolean"){
+        var x = (e.pageX-value.x); //var y = (e.pageY-value.y)
+        if( x > 10){        value.element.innerHTML =  'true'; }
+        else if( x < -10){  value.element.innerHTML = 'false'; }
+        e.preventDefault();
+    } else {
+      //console.log(e.pageX)
       window.scrollTo(
         document.body.scrollLeft + (curXPos - e.pageX),
         document.body.scrollTop  + (curYPos - e.pageY) );
-      e.stopPropagation();
+        e.stopPropagation();
+    }
   }
 });
 ////////////////////////////////////////////////////////////////////////////////
+function getParentClass(node, c){
+    while(!node.classList.contains(c)  ){
+        if(node.classList.contains(desktop)){ return null; } // FAIL
+        node = node.parentNode;
+    }
+    return node;
+}
+////////////////////////////////////////////////////////////////////////////////
+// var text = window.getSelection().toString();
+// var text = getSelectionHtml();
+// Object.prototype.insertAfter = function (newNode) { this.parentNode.insertBefore(newNode, this.nextSibling); }
+////////////////////////////////////////////////////////////////////////////////
+desktop.onkeydown = function(e){            e = e || window.event;
+  // if (e.keyCode == '13') {;}
+  //alert( e.keyCode );
+    if (e.keyCode === 9) {
+      var win = getParentClass(lastSelected, "global")
+
+      var list = win.getElementsByClassName("cmt");
+      for (var i = 0; i < list.length; i++) {
+        list[i].firstChild.style.display = 'block';
+      }
+var output = document.getElementById('text');
+         // alert( win.innerText ); // getElementsByClassName("Body")[0]
+         output.innerHTML = win.innerText;
+         for (var i = 0; i < list.length; i++) {
+           list[i].firstChild.style.display = '';
+         }
+    }
+    if(e.ctrlKey && e.which === 83){ // Check for the Ctrl key being pressed, and if the key = [S] (83)
+        alert('Ctrl+S!');
+        e.preventDefault();
+        return false;
+    }
+e.stopPropagation();
+};
+////////////////////////////////////////////////////////////////////////////////
+desktop.onkeyup = function(e){            e = e || window.event; //.prop("selectionStart");
+//setTimeout(f, 6000); alert("keyUp!")
+if (e.keyCode === 13) {
+        document.execCommand('insertHTML', false, '');
+      return false;
+    }
+
+
+//e.stopPropagation();
+var curs = document.getElementById('cursor');
+if(curs !== null){removeNode(curs);} // just in case there is an orphan
+    getLine(e.keyCode); // HAS: dumpTokens(str)
+    e.preventDefault();
+};
+
+////////////////////////////////////////////////////////////////////////////////
+var tab = document.getElementById("tab");
+////////////////////////////////////////////////////////////////////////////////
+tab.addEventListener('mousedown', function(e){
+  var cons = e.target.parentNode;
+      if( cons.classList.contains('closed') ){
+          cons.classList.remove('closed');
+          cons.classList.add('opened');
+      }else if( cons.classList.contains('opened') ){
+          cons.classList.remove('opened');
+          cons.classList.add('closed');
+      }
+});
+////////////////////////////////////////////////////////////////////////////////
+var lastSelected;
+////////////////////////////////////////////////////////////////////////////////
 desktop.addEventListener('mousedown', function(e){
     //alert(e.target.id)
+
+    lastSelected = e.target;
     var list = e.target.classList;
     if(e.target.id == 'code'){
-      curYPos = e.pageY;
-      curXPos = e.pageX;
-      curDown = true;
-      e.stopPropagation();} else
-    if(list.contains('tablink')  && e.target.parentNode.classList.contains('tabBox')){ // || list.contains('elseif') || list.contains('else') || list.contains('try') || list.contains('catch'))
-      var p = e.target.parentNode;
-      var tabsList = p.getElementsByClassName('toggle');
-      for (var i = 0; i < tabsList.length; i++) {
-        tabsList[i].style.display = 'none';
-      }
-      var id = e.target.dataset.id
-      var selected = document.getElementById(id);
-      selected.style.display = 'block';
-      //alert(e.target.dataset.id);
+          curYPos = e.pageY;
+          curXPos = e.pageX;
+          curDown = true;
+          e.stopPropagation();
+    } else if( e.target.classList.contains('num') ){
+          value.val = parseFloat(e.target.innerHTML);
+          value.x = e.pageX;
+          value.y = e.pageY;
+          curDown = true;
+          value.element = e.target;
+          eventType = "valueDrag";
+          e.stopPropagation();
+          //e.preventDefault();
+    } else if( e.target.classList.contains('bl') ){
+            value.val = e.target.innerHTML;
+            value.x = e.pageX; value.y = e.pageY;
+            curDown = true;
+            value.element = e.target;
+            eventType = "boolean";
+            e.stopPropagation();
+            //e.preventDefault();
+    } else if(list.contains('tablink')  && e.target.parentNode.classList.contains('tabBox')){ // || list.contains('elseif') || list.contains('else') || list.contains('try') || list.contains('catch'))
+        var p = e.target.parentNode;
+        var tabsList = p.getElementsByClassName('toggle');
+        for (var i = 0; i < tabsList.length; i++) {
+          tabsList[i].style.display = 'none';
+        }
+        var id = e.target.dataset.id
+        var selected = document.getElementById(id);
+        selected.style.display = 'block';
+        //alert(e.target.dataset.id);
 
     }
 
@@ -45,6 +149,8 @@ desktop.addEventListener('mousedown', function(e){
 desktop.addEventListener('mouseup', function(e){
       curDown = false;
       setTimeout( function (){ move = false; }, 600);
+      value.element = null;
+      eventType = '';
 });
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// Zooming //////////////////////////////////////////
@@ -92,7 +198,7 @@ onmousemove = function(e){
   //console.log("mouse location:", x, y);
 }
 */
-
+/*
 //////////////////////////////OLD///////////////////////////////////////////////
 //document.querySelector('.page-body').
 desktop.addEventListener('click', function (event) {
@@ -118,4 +224,4 @@ function zoom(zoomOut){
         zoomed = '';
       }
 
-}
+}*/

@@ -12,7 +12,7 @@ end
 
 Vector() = Vector(0, 0, 0)
 
-# Methods on Vector 
+# Methods on Vector
 
 function toList(a::Vector)
 	return [a.x, a.y, a.z]

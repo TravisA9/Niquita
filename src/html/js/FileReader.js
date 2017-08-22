@@ -55,5 +55,4 @@ function search(nameKey, myArray){
     return -1;
 }
 ////////////////////////////////////////////////////////////////////////////////
-document.getElementById('file-input')
-  .addEventListener('change', readSingleFile, false);
+//document.getElementById('file-input').addEventListener('change', readSingleFile, false);

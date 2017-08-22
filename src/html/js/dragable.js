@@ -8,6 +8,8 @@ var codeLoaded = function(){
    // Bind the functions...
    var elems = document.getElementsByClassName('draggable');
 
+window.scrollTo(1500, 1500);
+
    for (var i = 0; i < elems.length; i++) {
              var elem = elems[i];
                elem.onmousedown = function () { _drag_init(this.parentNode); };

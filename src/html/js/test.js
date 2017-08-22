@@ -1,6 +1,8 @@
 
 
 rules = [
+  {action: "none", name:"cursor",          expr:/^(<span id="cursor"><\/span>)/,   groups:1},
+  {action: "none", name:"cursor",          expr:/^(\$\$cursor\$\$)/,   groups:1},
   {action: "none", name:"string",          expr:/^("[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*")/,   groups:1},
   {action: "none", name:"stringTic",       expr:/^('[^\\\r\n]*(?:\\.[^\\\r\n]*)*')/,     groups:1},
   {action: "none", name:"stringTipple",    expr:/^("""[^\\\r\n]*(?:\\.[^\\\r\n]*)*""")/, groups:1},
@@ -16,7 +18,7 @@ rules = [
   {action: "none", name:"arrayIndexing",   expr:/^(\[+[^\]]*:*\bend\b\])/,                   groups:1},
   {action: "none", name:"generator",       expr:/^(\w+\(+(?:.*)\bfor*\b(?:.*)\))/,       groups:1},
 
-  {action: "push", name:"function",        expr:/^\bfunction\b\s(\w*!*)*\((.*)\)/,       groups:2},
+  {action: "push", name:"function",        expr:/^\bfunction\b\s((?:\w*!*)|(?:[+\-*.^/\\*%?=!|&~><]*))*\((.*)\)/,       groups:2},
   {action: "push", name:"JuliaFile",       expr:/^\bJuliaFile\b\s(?:[C:\\]*)*([\w\\/]*.jl)/,   groups:1},
   {action: "push", name:"module",          expr:/^\bmodule\b\s([\w\\]*)/,                groups:1},
   {action: "push", name:"baremodule",      expr:/^\bbaremodule\b\s([\w\\]*)/,            groups:1},
@@ -63,16 +65,15 @@ rules = [
 
 ////////////////////////////////////////////////////////////////////////////////
 function dumpTokens(str){
-  tree = [{type:"root", children:[] }];
-  stack.push({type:"root", node:tree[0]});
-  newstring = "";
+    tree = [{type:"root", children:[] }];
+    stack.push({type:"root", node:tree[0]});
     newstring = getNextToken(str);
 
-    printOut(newstring);
+    //alert('str: ' + newstring[0] + ', return: '+ printOut(newstring));
     while (newstring !== null) {
-            newstring = getNextToken(newstring.match[newstring.match.length-1]);
+
             var token = printOut(newstring);
-            if(token === undefined){break;}
+            if(token === undefined){ break; alert(token + ' is not defied!'); }
             //console.log( token.type + ": " + newstring.action );
             if(stack[stack.length-1] !== undefined ){
               var node = stack[stack.length-1].node;}
@@ -96,19 +97,48 @@ function dumpTokens(str){
                                stack.push({type: token.name, node:newNode });
                                break;
             }
+            newstring = getNextToken(newstring.match[newstring.match.length-1]);
     } // while
     tree.push({type:"end", children:[], data:[""]}); // make sure the root is closed.
-
-    //alert("str");
-    var html = document.getElementById("code");
-    var components = toHTML(tree[0].children);
-    // alert("Components: " + components)
-    html.innerHTML = components;
-
-
+    return toHTML(tree[0].children);
 }
 ////////////////////////////////////////////////////////////////////////////////
 function GenerateId(){ return "id" + Math.random().toString(16).slice(2); }
+////////////////////////////////////////////////////////////////////////////////
+function printOut(obj){
+   if(obj === null){return;}
+
+    switch (obj.match.length) {
+      case 1: // console.log( obj.name + ": " + obj.match[0] );
+              return {type: obj.name, data:[obj.match[0]], children:[] };
+              break;
+      case 2: // console.log( obj.name + ": " + obj.match[0] );
+              return {type: obj.name, data:[obj.match[0]], children:[] };
+              break;
+      case 3: // console.log( obj.name + ": " + obj.match[1] );
+              return {type: obj.name, data:[obj.match[1]], children:[] };
+              break;
+      case 4: // console.log( obj.name + ": " + obj.match[1] + "  -  " + obj.match[2] );
+              return {type: obj.name, data:[obj.match[1],obj.match[2]], children:[] };
+              break;
+    }
+
+}
+////////////////////////////////////////////////////////////////////////////////
+function getNextToken(str){
+  //eat newline: var s = str.split(/^\n/); (s.length == 1) ? str = s[0]:str = s[1];
+   if(str !== undefined && str.length){
+    for (var i = 0; i < rules.length; i++) {
+      result = str.split(rules[i].expr);
+      if(result.length > 1){
+        return { action:rules[i].action, name:rules[i].name, match:result};
+      }
+    }
+   }
+   //console.log("String empty, cannot parse!");
+  return null;
+}
+////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 // tree is an array of nodes
 ////////////////////////////////////////////////////////////////////////////////
@@ -160,12 +190,17 @@ switch (type) {
         case "boolean": str += '<span class="bl">' + data + '</span>';
               break;
 
+        case "operator": str += '<span class="op">' + data + '</span>'; //console.log("operator");
+              break;
+        case "punctuation": str += '<span class="pt">' + data + '</span>';
+              break;
+
+        case "cursor":
         case "unidentified":
-        case "operator":
-        case "punctuation":
         case "tuple":
         case "word":
         case "space": str += data; break;
+
         case "Newline": str += '</div><div class="ln">'; break;
 
 
@@ -178,14 +213,18 @@ switch (type) {
               break;
 
         case "JuliaFile":
-        str += '<div class="' + type + ' global" style="z-index: 400; left: 95px; top: 502px;"><div class="head draggable"><i class="fa fa-gears fa"></i><span class="name"></span> <span class="args">' + data + '</span></div><div class="Body">' + children;
+              var name = /(\w+)\.jl/g;
+              //var fileName = name.exec(type)[1];
+              str += '<div id="' + name.exec(data)[1] + '" class="' + type + ' global" style="z-index: 400; left: '
+              + (1000 + (Math.random()*1000)) + 'px; top: '
+              + (1000 + (Math.random()*1000)) + 'px;"><div class="head draggable"><i class="fa fa-gears fa"></i><span class="name"></span> <span class="args">' + data + '</span></div><div class="Body">' + children;
               break;
 
         case "function":
         case "type":
         case "struct":
         str += '<div class="' + type + ' global" style="z-index: 400; left: 95px; top: 502px;"><div class="head draggable"><i class="fa fa-gears fa"></i><span class="name">'
-        + data + ' </span> <span class="args">' + dats + '</span></div><div class="Body">' + children;
+        + data + ' </span><span class="args">' + dats + '</span></div><div class="Body" style="width: 300px; height: 10px;">' + children;
               break;
 
               case "baremodule":
@@ -243,37 +282,3 @@ switch (type) {
 //console.log(str)
  return str;
 }
-////////////////////////////////////////////////////////////////////////////////
-function printOut(obj){
-   if(obj === null){return;}
-
-    switch (obj.match.length) {
-      case 1: // console.log( obj.name + ": " + obj.match[0] );
-              return {type: obj.name, data:[obj.match[0]], children:[] };
-              break;
-      case 2: // console.log( obj.name + ": " + obj.match[0] );
-              return {type: obj.name, data:[obj.match[0]], children:[] };
-              break;
-      case 3: // console.log( obj.name + ": " + obj.match[1] );
-              return {type: obj.name, data:[obj.match[1]], children:[] };
-              break;
-      case 4: // console.log( obj.name + ": " + obj.match[1] + "  -  " + obj.match[2] );
-              return {type: obj.name, data:[obj.match[1],obj.match[2]], children:[] };
-              break;
-    }
-
-}
-////////////////////////////////////////////////////////////////////////////////
-function getNextToken(str){
-  //eat newline: var s = str.split(/^\n/); (s.length == 1) ? str = s[0]:str = s[1];
-
-    for (var i = 0; i < rules.length; i++) {
-      result = str.split(rules[i].expr);
-      if(result.length > 1){
-        return { action:rules[i].action, name:rules[i].name, match:result};
-      }
-    }
-    //alert("Warning: no token match! -->" + str.slice(0, 50) + '<-- length:' + str.length)
-  return null;
-}
-////////////////////////////////////////////////////////////////////////////////

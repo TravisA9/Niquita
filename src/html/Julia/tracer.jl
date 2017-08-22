@@ -7,7 +7,9 @@ import Images
 using ImageView, FileIO, FixedPointNumbers,
 			 Colors, ColorTypes, ImageMetadata, Base
 
-
+			 println("Print some message!")
+			 print("Print some message!")
+someBoolValue = true
 # Constants
 AMBIENT = get(rayTracerProperties, "ambient", 0.1)
 
